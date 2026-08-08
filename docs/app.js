@@ -33,6 +33,23 @@ const skillDefinitions = [
   { key: "persuasion", label: "遊說", ability: "cha" },
 ];
 
+const soulScarCatalog = {
+  "分離恐懼": { severity: "minor", effect: "獨處時陷入恐懼，無法在檢定中加入熟練加值；消耗 1 光明火花可抵抗 1 小時。" },
+  "恐慌發作": { severity: "minor", effect: "受到強烈情緒刺激時必須優先逃離，逃離前無法在檢定中加入熟練加值；消耗 1 光明火花可抵抗 10 分鐘。" },
+  "失眠": { severity: "minor", effect: "入睡時擲 d20，低於幽冥等級則持續 5 天；長休只獲得短休增益，短休不獲得增益。" },
+  "夢魔": { severity: "minor", effect: "入睡時擲 d20，低於幽冥等級則持續 5 天；至少承受 1 級疲憊，社交檢定受到等同幽冥等級的減值。" },
+  "休克": { severity: "moderate", effect: "每次幽冥檢定後因創傷封閉 10 分鐘，期間無法行動；消耗 1 光明火花可延後 5 分鐘生效。" },
+  "憂鬱症": { severity: "moderate", effect: "醒來時擲 d20，低於幽冥等級則持續 5 天；社交與感知檢定受到等同幽冥等級的減值。" },
+  "第二人格": { severity: "moderate", effect: "第二人格每週可取得一次、至多 1 小時控制權；消耗 1 光明火花可壓制 1 小時。" },
+  "幻覺": { severity: "severe", effect: "每兩次長休之間出現一次駭人錯覺；消耗 1 光明火花可意識到那是錯覺。" },
+  "狂躁症": { severity: "severe", effect: "每週最多發作 10 分鐘，發作時以殘忍方式攻擊範圍內所有生物；消耗 1 光明火花可延後 1 分鐘。" },
+  "妄想": { severity: "ultimate", effect: "極端刺激下可能失去行動 1 分鐘；目擊者須通過感知豁免 DC 18 才能執行行動。" },
+  "瘋狂": { severity: "ultimate", effect: "在所有情境中做出不合適的舉動；消耗 1 光明火花可在一個情境中勉強正常表現。" },
+};
+
+const soulScarSeverityLabels = { none: "無", minor: "輕微", moderate: "中等", severe: "嚴重", ultimate: "終極" };
+const soulScarStatusLabels = { temporary: "暫時生效", recovery: "可嘗試擺脫", permanent: "永久", removed: "已移除" };
+
 const armorTypes = [
   { key: "none", label: "無護甲", base: 10, dexMode: "full" },
   { key: "leather", label: "皮甲", base: 11, dexMode: "full" },
@@ -139,6 +156,7 @@ const sampleCharacter = {
   name: "瑟琳娜", player: "Ron", level: 5, xp: 6500, race: "艾維尼安人", class: "織霧者", subclass: "先知",
   background: "迷霧抄寫員", heritage: "時織學派旁系", origin: "潮蝕邊境塔城", destiny: "在大霧降臨前改寫失落預言", creed: "記錄一切，延後毀滅",
   currentHp: 26, maxHpOverride: "", tempHp: 3, gloomLevel: 1, lightSpark: 2, hitDiceUsed: 1,
+  soulScarEntries: "失眠|minor|temporary|5|入睡時擲 d20，低於幽冥等級則持續 5 天；長休只獲得短休增益，短休不獲得增益。|在邊境塔事件後開始。",
   concentrationState: "active", inspirationState: "ready", coverState: "half", deathSaveSuccess: 0, deathSaveFail: 0, initiativeScore: 17,
   conditionNotes: "專注中、半掩蔽、低光環境觀察優勢", tacticalNotes: "對施法者保留反制法術；被近身時優先迷霧步脫離",
   armorType: "leather", shieldMode: "none", acOverride: "", cp: 12, sp: 25, gp: 84, pp: 1, carryOverride: "", carryWeight: 41,
@@ -166,6 +184,9 @@ const dynamicFields = document.getElementById("dynamicFields");
 const abilityInputs = document.getElementById("abilityInputs");
 const skillInputs = document.getElementById("skillInputs");
 const spellManager = document.getElementById("spellManager");
+const soulScarEditor = document.getElementById("soulScarEditor");
+const soulScarRuleNote = document.getElementById("soulScarRuleNote");
+const addSoulScarBtn = document.getElementById("addSoulScarBtn");
 const spellEditor = document.getElementById("spellEditor");
 const addSpellBtn = document.getElementById("addSpellBtn");
 const weaponEditor = document.getElementById("weaponEditor");
@@ -186,10 +207,13 @@ document.getElementById("importBtn").addEventListener("click", () => importFileI
 document.getElementById("exportBtn").addEventListener("click", exportJson);
 document.getElementById("resetBtn").addEventListener("click", resetForm);
 document.getElementById("printBtn").addEventListener("click", () => window.print());
+addSoulScarBtn.addEventListener("click", addSoulScarEntry);
 addSpellBtn.addEventListener("click", addSpellEntry);
 addWeaponBtn.addEventListener("click", addWeaponEntry);
 importFileInput.addEventListener("change", importJson);
 form.addEventListener("input", updateAll);
+soulScarEditor.addEventListener("input", handleSoulScarEditorInput);
+soulScarEditor.addEventListener("click", handleSoulScarEditorActions);
 spellEditor.addEventListener("input", syncSpellEntriesFromEditor);
 spellEditor.addEventListener("click", handleSpellEditorActions);
 weaponEditor.addEventListener("input", syncWeaponEntriesFromEditor);
@@ -219,7 +243,7 @@ function init() {
   applyClassSavingThrows();
   const saved = loadState();
   if (saved) populateForm(saved);
-  else { buildSpellEditor(); buildWeaponEditor(); }
+  else { buildSoulScarEditor(); buildSpellEditor(); buildWeaponEditor(); }
   updateAll();
 }
 
@@ -243,6 +267,95 @@ function applyClassSavingThrows() {
 
 function buildSkillInputs() {
   skillInputs.innerHTML = skillDefinitions.map((skill) => `<div class="skill-card"><div class="skill-head"><div><h4>${skill.label}</h4><p>${getAbilityLabel(skill.ability)} 技能</p></div><div class="skill-value" id="skillPreview_${skill.key}">+0</div></div><label><span>熟練狀態</span><select name="skill_${skill.key}_mode"><option value="none">未熟練</option><option value="proficient">熟練</option><option value="expertise">專精</option></select></label><label><span>額外修正</span><input type="number" name="skill_${skill.key}_misc" value="0"></label></div>`).join("");
+}
+
+function getSoulScarSeverityForGloom(gloomLevel) {
+  const level = Math.max(0, toNumber(gloomLevel, 0));
+  if (level === 0) return "none";
+  if (level <= 3) return "minor";
+  if (level <= 6) return "moderate";
+  if (level <= 8) return "severe";
+  return "ultimate";
+}
+
+function buildSoulScarEditor() {
+  const entries = parseSoulScarEntries(form.elements.soulScarEntries.value);
+  updateSoulScarRuleNote();
+  soulScarEditor.innerHTML = entries.length ? entries.map(renderSoulScarEditorCard).join("") : `<div class="soul-scar-editor-empty"><strong>目前沒有靈魂傷疤</strong><span>幽冥提升時，按「新增傷疤」建立對應級別的追蹤卡。</span></div>`;
+}
+
+function updateSoulScarRuleNote() {
+  const gloomLevel = toNumber(form.elements.gloomLevel.value, 0);
+  const suggestedSeverity = getSoulScarSeverityForGloom(gloomLevel);
+  soulScarRuleNote.innerHTML = `<strong>幽冥 ${gloomLevel}：${soulScarSeverityLabels[suggestedSeverity]}傷疤</strong><span>幽冥檢定自然 1 會使傷疤永久化；堅信檢定自然 20 可移除一個永久傷疤。</span>`;
+}
+
+function renderSoulScarEditorCard(scar, index) {
+  const severityOptions = ["minor", "moderate", "severe", "ultimate"].map((severity) => `<option value="${severity}" ${scar.severity === severity ? "selected" : ""}>${soulScarSeverityLabels[severity]}</option>`).join("");
+  const statusOptions = ["temporary", "recovery", "permanent", "removed"].map((status) => `<option value="${status}" ${scar.status === status ? "selected" : ""}>${soulScarStatusLabels[status]}</option>`).join("");
+  return `<article class="soul-scar-editor-card" data-soul-scar-index="${index}">
+    <div class="soul-scar-editor-card-head"><strong>傷疤 ${index + 1}</strong><button type="button" class="text-btn danger-text" data-soul-scar-editor-action="remove">移除記錄</button></div>
+    <div class="soul-scar-editor-grid">
+      <label class="soul-scar-field-name"><span>名稱</span><input type="text" list="soulScarNames" data-soul-scar-field="name" value="${escapeHtml(scar.name)}" placeholder="選擇規則書傷疤或自行命名"></label>
+      <label><span>級別</span><select data-soul-scar-field="severity">${severityOptions}</select></label>
+      <label><span>狀態</span><select data-soul-scar-field="status">${statusOptions}</select></label>
+      <label><span>剩餘天數</span><input type="number" min="0" data-soul-scar-field="remainingDays" value="${scar.remainingDays}"></label>
+      <label class="soul-scar-field-effect"><span>規則效果</span><textarea rows="3" data-soul-scar-field="effect" placeholder="選擇規則書傷疤後會自動帶入">${escapeHtml(scar.effect)}</textarea></label>
+      <label class="soul-scar-field-note"><span>觸發情境 / 角色化備註</span><textarea rows="3" data-soul-scar-field="note" placeholder="與城主及團員討論後記錄">${escapeHtml(scar.note)}</textarea></label>
+    </div>
+  </article>`;
+}
+
+function addSoulScarEntry() {
+  syncSoulScarEntriesFromEditor();
+  const entries = parseSoulScarEntries(form.elements.soulScarEntries.value);
+  const severity = getSoulScarSeverityForGloom(form.elements.gloomLevel.value);
+  entries.push({ name: "新靈魂傷疤", severity: severity === "none" ? "minor" : severity, status: "temporary", remainingDays: 7, effect: "", note: "" });
+  form.elements.soulScarEntries.value = serializeSoulScarEntries(entries);
+  buildSoulScarEditor();
+  updateAll();
+  soulScarEditor.querySelector(".soul-scar-editor-card:last-child input")?.focus();
+}
+
+function handleSoulScarEditorInput(event) {
+  if (event.target.dataset.soulScarField === "name") {
+    const scar = soulScarCatalog[event.target.value];
+    if (scar) {
+      const card = event.target.closest(".soul-scar-editor-card");
+      card.querySelector('[data-soul-scar-field="severity"]').value = scar.severity;
+      card.querySelector('[data-soul-scar-field="effect"]').value = scar.effect;
+    }
+  }
+  syncSoulScarEntriesFromEditor();
+}
+
+function handleSoulScarEditorActions(event) {
+  const button = event.target.closest("[data-soul-scar-editor-action]");
+  if (!button) return;
+  button.closest(".soul-scar-editor-card")?.remove();
+  syncSoulScarEntriesFromEditor();
+  buildSoulScarEditor();
+  updateAll();
+}
+
+function syncSoulScarEntriesFromEditor() {
+  const entries = Array.from(soulScarEditor.querySelectorAll(".soul-scar-editor-card")).map((card) => {
+    const value = (field) => card.querySelector(`[data-soul-scar-field="${field}"]`)?.value ?? "";
+    return { name: value("name") || "未命名傷疤", severity: value("severity") || "minor", status: value("status") || "temporary", remainingDays: Math.max(0, toNumber(value("remainingDays"), 0)), effect: value("effect"), note: value("note") };
+  });
+  form.elements.soulScarEntries.value = serializeSoulScarEntries(entries);
+}
+
+function parseSoulScarEntries(text) {
+  if (!text) return [];
+  return String(text).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
+    const [name = "未命名傷疤", severity = "minor", status = "temporary", remainingDaysRaw = "7", effect = "", note = ""] = line.split("|").map((part) => part.trim());
+    return { name, severity: soulScarSeverityLabels[severity] ? severity : "minor", status: soulScarStatusLabels[status] ? status : "temporary", remainingDays: Math.max(0, toNumber(remainingDaysRaw, 0)), effect, note };
+  });
+}
+
+function serializeSoulScarEntries(entries) {
+  return entries.map((scar) => [scar.name, scar.severity, scar.status, scar.remainingDays, scar.effect, scar.note].map(sanitizeWeaponField).join("|")).join("\n");
 }
 
 function buildSpellEditor() {
@@ -435,6 +548,7 @@ function populateForm(data) {
   rebuildDynamicFields();
   rebuildSpellManager();
   Object.entries(data).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value ?? ""; });
+  buildSoulScarEditor();
   buildSpellEditor();
   buildWeaponEditor();
 }
@@ -465,6 +579,7 @@ function updateAll() {
   const proficiency = getProficiencyBonus(state.level);
   const skills = getSkillTotals(state, finalAbilities, proficiency);
   const savingThrows = getSavingThrowTotals(state, finalAbilities, proficiency);
+  updateSoulScarRuleNote();
   updateAbilityHints(state, savingThrows);
   updateSkillPreviews(skills, proficiency);
   renderSheet(state, finalAbilities, skills, savingThrows, proficiency);
@@ -504,6 +619,8 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
   const spellSummary = getSpellSummary(state, classData, finalAbilities, proficiency);
   const parsedSpells = parseSpellEntries(state.spellEntries, classData, finalAbilities, proficiency);
   const parsedWeapons = parseWeaponEntries(state.weaponEntries, finalAbilities, proficiency);
+  const soulScars = parseSoulScarEntries(state.soulScarEntries);
+  const activeSoulScars = soulScars.filter((scar) => scar.status !== "removed");
   const weaponProficiencies = mergeProficiencies(classData.weaponProficiencies, state.additionalWeaponProficiencies);
   const languageProficiencies = mergeProficiencies(raceData.languages, state.additionalLanguages);
   const resourceCaps = getClassResourceCaps(state, classData, finalAbilities);
@@ -535,6 +652,7 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
           ${statBox("速度", `${raceData.speed} 尺`, "stat-box-highlight")}
           ${statBox("幽冥等級", state.gloomLevel ?? 0, "stat-box-track")}
           ${statBox("光明火花", state.lightSpark ?? 0, "stat-box-track")}
+          ${statBox("靈魂傷疤", activeSoulScars.length, "stat-box-scar")}
           ${statBox("先攻", formatSigned(finalAbilities.dex.mod), "stat-box-highlight")}
           ${statBox("生命骰", `d${classData.hitDie} / 已用 ${state.hitDiceUsed ?? 0}`, "stat-box-track")}
           ${statBox("被動察覺", 10 + skills.perception.total, "stat-box-highlight")}
@@ -550,6 +668,10 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
       featureBox("目前狀態", getCombatStateLines(state, armorClass), "feature-box-combat"),
       featureBox("戰術提醒", [state.conditionNotes || "尚未填寫當前狀態。", state.tacticalNotes || "尚未填寫優勢 / 劣勢提醒。"], "feature-box-combat"),
     ]), "section-combat")}
+    ${section("靈魂傷疤", `<div class="soul-scar-sheet-layout">
+      ${renderSoulScarDeck(soulScars, state.gloomLevel)}
+      <div class="soul-scar-sheet-rule"><strong>目前幽冥 ${state.gloomLevel ?? 0}：${getSoulScarSeverityForGloom(state.gloomLevel) === "none" ? "無傷疤" : `${soulScarSeverityLabels[getSoulScarSeverityForGloom(state.gloomLevel)]}傷疤`}</strong><span>傷疤通常持續一週；自然 1 永久化，自然 20 可移除永久傷疤。傷疤內容應先與全桌溝通。</span></div>
+    </div>`, "section-soul-scars")}
     ${section("屬性與豁免", `<div class="ability-preview-grid">${abilities.map((ability) => renderAbilityCard(ability, finalAbilities[ability.key], savingThrows[ability.key])).join("")}</div>`, "section-abilities")}
     ${section("技能", `<div class="sheet-skills-grid">${getHighlightedSkills(skills).map(renderSheetSkill).join("")}</div>`, "section-skills")}
     ${section("熟練與語言", featureGrid([
@@ -643,6 +765,25 @@ function renderQuickResources(resources) {
     </div>
   </div>`).join("") : `<div class="quick-spend-card empty-card"><h4>職業資源</h4><p>目前沒有可快速點按的職業資源。</p></div>`;
 }
+
+function renderSoulScarDeck(scars, gloomLevel) {
+  if (!scars.length) return `<article class="soul-scar-card soul-scar-empty"><strong>靈魂尚未留下傷疤</strong><span>幽冥等級提升時，城主會給予一個對應級別的靈魂傷疤。</span></article>`;
+  return `<div class="soul-scar-deck">${scars.map((scar, index) => {
+    const isRemoved = scar.status === "removed";
+    const durationText = scar.status === "permanent" ? "永久存在" : scar.status === "recovery" ? "已滿一週，可嘗試擺脫" : scar.status === "removed" ? "已移除" : `剩餘 ${scar.remainingDays} 天`;
+    const actions = isRemoved
+      ? `<button type="button" class="session-mini-btn" data-action="set-soul-scar-status" data-soul-scar-index="${index}" data-status="temporary">恢復追蹤</button>`
+      : `<button type="button" class="session-mini-btn is-minus" data-action="adjust-soul-scar-days" data-soul-scar-index="${index}" data-delta="-1">-1 天</button>${scar.status === "temporary" ? `<button type="button" class="session-mini-btn" data-action="set-soul-scar-status" data-soul-scar-index="${index}" data-status="recovery">滿一週</button>` : ""}<button type="button" class="session-mini-btn is-permanent" data-action="set-soul-scar-status" data-soul-scar-index="${index}" data-status="permanent">永久化</button><button type="button" class="session-mini-btn" data-action="set-soul-scar-status" data-soul-scar-index="${index}" data-status="removed">移除</button>`;
+    return `<article class="soul-scar-card severity-${scar.severity} ${isRemoved ? "is-removed" : ""}">
+      <div class="soul-scar-card-head"><div><span>${soulScarSeverityLabels[scar.severity]}傷疤</span><strong>${escapeHtml(scar.name)}</strong></div><b>${soulScarStatusLabels[scar.status]}</b></div>
+      <div class="soul-scar-duration">${durationText}${scar.severity !== getSoulScarSeverityForGloom(gloomLevel) && !isRemoved ? `<em>目前幽冥建議：${soulScarSeverityLabels[getSoulScarSeverityForGloom(gloomLevel)]}</em>` : ""}</div>
+      <p>${escapeHtml(scar.effect || "尚未填寫規則效果。")}</p>
+      ${scar.note ? `<small>${escapeHtml(scar.note)}</small>` : ""}
+      <div class="soul-scar-actions print-hide">${actions}</div>
+    </article>`;
+  }).join("")}</div>`;
+}
+
 function spellActionDeck(spells) {
   if (!spells.length) return `<article class="feature-box feature-box-magic empty-card"><h4>法術動作</h4><div class="empty">尚未設定法術卡。</div></article>`;
   return `<div class="spell-action-deck">${spells.map((spell, index) => {
@@ -869,10 +1010,35 @@ function handleSheetActions(event) {
     rollSpellDamage(toNumber(button.dataset.spellIndex, -1), true, false);
   } else if (action === "roll-spell-upcast") {
     rollSpellDamage(toNumber(button.dataset.spellIndex, -1), false, true);
+  } else if (action === "adjust-soul-scar-days") {
+    adjustSoulScarDays(toNumber(button.dataset.soulScarIndex, -1), toNumber(button.dataset.delta, 0));
+  } else if (action === "set-soul-scar-status") {
+    setSoulScarStatus(toNumber(button.dataset.soulScarIndex, -1), button.dataset.status);
   } else if (action === "clear-dice-history") {
     diceRollHistory.length = 0;
     updateAll();
   }
+}
+
+function adjustSoulScarDays(index, delta) {
+  const scars = parseSoulScarEntries(form.elements.soulScarEntries.value);
+  if (!scars[index] || scars[index].status === "permanent" || scars[index].status === "removed") return;
+  scars[index].remainingDays = Math.max(0, scars[index].remainingDays + delta);
+  if (scars[index].remainingDays === 0) scars[index].status = "recovery";
+  form.elements.soulScarEntries.value = serializeSoulScarEntries(scars);
+  buildSoulScarEditor();
+  updateAll();
+}
+
+function setSoulScarStatus(index, status) {
+  const scars = parseSoulScarEntries(form.elements.soulScarEntries.value);
+  if (!scars[index] || !soulScarStatusLabels[status]) return;
+  scars[index].status = status;
+  if (status === "temporary" && scars[index].remainingDays === 0) scars[index].remainingDays = 7;
+  if (status === "recovery") scars[index].remainingDays = 0;
+  form.elements.soulScarEntries.value = serializeSoulScarEntries(scars);
+  buildSoulScarEditor();
+  updateAll();
 }
 
 function getCurrentSpells() {
@@ -1038,7 +1204,7 @@ function adjustQuickResource(resourceLabel, delta) {
 }
 
 function syncCurrentHpToEstimate() { form.elements.currentHp.value = getEstimatedMaxHp(getState(), classes[getState().class], getFinalAbilities(getState())); }
-function resetForm() { localStorage.removeItem(STORAGE_KEY); diceRollHistory.length = 0; form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); buildSpellEditor(); buildWeaponEditor(); updateAll(); }
+function resetForm() { localStorage.removeItem(STORAGE_KEY); diceRollHistory.length = 0; form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); buildSoulScarEditor(); buildSpellEditor(); buildWeaponEditor(); updateAll(); }
 function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
 

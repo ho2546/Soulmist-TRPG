@@ -1035,6 +1035,95 @@ textarea:focus {
   text-align: center;
 }
 
+.soul-scar-builder {
+  padding: 16px;
+  border: 1px solid rgba(103, 58, 50, 0.2);
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(145deg, rgba(248, 245, 239, 0.96), rgba(235, 226, 216, 0.86)),
+    repeating-linear-gradient(135deg, transparent 0 22px, rgba(103, 58, 50, 0.025) 22px 23px);
+}
+
+.soul-scar-builder-head,
+.soul-scar-editor-card-head,
+.soul-scar-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.soul-scar-builder-head .field-title {
+  color: #6f3d35;
+  font-weight: 800;
+}
+
+.soul-scar-builder-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.soul-scar-rule-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 4px solid #835148;
+  background: rgba(111, 61, 53, 0.07);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.soul-scar-rule-note strong {
+  flex: 0 0 auto;
+  color: #6f3d35;
+}
+
+.soul-scar-editor {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.soul-scar-editor-card {
+  padding: 14px;
+  border: 1px solid rgba(103, 58, 50, 0.17);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.soul-scar-editor-card-head {
+  margin-bottom: 12px;
+}
+
+.soul-scar-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.soul-scar-field-name,
+.soul-scar-field-effect,
+.soul-scar-field-note {
+  grid-column: span 2;
+}
+
+.soul-scar-entries-source {
+  display: none;
+}
+
+.soul-scar-editor-empty {
+  display: grid;
+  gap: 4px;
+  padding: 22px;
+  border: 1px dashed rgba(103, 58, 50, 0.25);
+  border-radius: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .weapon-combat-layout {
   display: grid;
   gap: 12px;
@@ -1387,6 +1476,14 @@ textarea:focus {
     linear-gradient(180deg, rgba(246, 242, 235, 0.94), rgba(233, 226, 214, 0.8));
 }
 
+.stat-box-scar {
+  background: linear-gradient(180deg, rgba(249, 244, 239, 0.96), rgba(235, 221, 213, 0.84));
+}
+
+.stat-box-scar::after {
+  background: linear-gradient(180deg, #835148, #563d3a);
+}
+
 .stat-box::after {
   content: "";
   position: absolute;
@@ -1423,6 +1520,134 @@ textarea:focus {
 
 .section-combat {
   grid-column: 8 / 13;
+}
+
+.section-soul-scars {
+  grid-column: 1 / -1;
+}
+
+.soul-scar-sheet-layout,
+.soul-scar-deck {
+  display: grid;
+  gap: 12px;
+}
+
+.soul-scar-deck {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.soul-scar-card {
+  display: grid;
+  gap: 9px;
+  padding: 15px;
+  border: 1px solid rgba(103, 58, 50, 0.2);
+  border-left: 5px solid #835148;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(252, 249, 244, 0.98), rgba(239, 230, 221, 0.9));
+  box-shadow: 0 9px 18px rgba(76, 49, 42, 0.08);
+}
+
+.soul-scar-card.severity-moderate {
+  border-left-color: #806447;
+}
+
+.soul-scar-card.severity-severe {
+  border-left-color: #753f35;
+}
+
+.soul-scar-card.severity-ultimate {
+  border-left-color: #3f3433;
+  background: linear-gradient(145deg, rgba(245, 240, 234, 0.98), rgba(222, 210, 201, 0.92));
+}
+
+.soul-scar-card.is-removed {
+  opacity: 0.58;
+  filter: grayscale(0.65);
+}
+
+.soul-scar-card-head > div {
+  display: grid;
+  gap: 3px;
+}
+
+.soul-scar-card-head span {
+  color: #835148;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.soul-scar-card-head strong {
+  color: var(--ink);
+  font-size: 1.04rem;
+}
+
+.soul-scar-card-head b {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(103, 58, 50, 0.09);
+  color: #6f3d35;
+  font-size: 0.74rem;
+}
+
+.soul-scar-duration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #6f3d35;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.soul-scar-duration em {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.soul-scar-card p,
+.soul-scar-card small {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.soul-scar-card small {
+  padding-top: 8px;
+  border-top: 1px solid rgba(103, 58, 50, 0.1);
+}
+
+.soul-scar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.session-mini-btn.is-permanent {
+  background: rgba(63, 52, 51, 0.09);
+  color: #4c3835;
+}
+
+.soul-scar-sheet-rule {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(103, 58, 50, 0.14);
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.soul-scar-sheet-rule strong {
+  flex: 0 0 auto;
+  color: #6f3d35;
+}
+
+.soul-scar-empty {
+  grid-column: 1 / -1;
+  color: var(--muted);
 }
 
 .section-abilities {
@@ -1760,6 +1985,10 @@ textarea:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .soul-scar-editor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .weapon-field-name,
   .weapon-field-note,
   .spell-field-name,
@@ -1812,13 +2041,31 @@ textarea:focus {
 
 @media (max-width: 760px) {
   .weapon-builder-head,
-  .spell-builder-head {
+  .spell-builder-head,
+  .soul-scar-builder-head {
     align-items: flex-start;
   }
 
   .weapon-editor-grid,
   .spell-editor-grid {
     grid-template-columns: 1fr;
+  }
+
+  .soul-scar-editor-grid,
+  .soul-scar-deck {
+    grid-template-columns: 1fr;
+  }
+
+  .soul-scar-field-name,
+  .soul-scar-field-effect,
+  .soul-scar-field-note {
+    grid-column: span 1;
+  }
+
+  .soul-scar-rule-note,
+  .soul-scar-sheet-rule {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .weapon-action-stats {
@@ -2110,6 +2357,41 @@ textarea:focus {
 
   .section-proficiencies {
     grid-column: 1 / -1;
+  }
+
+  .section-soul-scars {
+    grid-column: 1 / -1;
+  }
+
+  .soul-scar-deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2mm;
+  }
+
+  .soul-scar-card {
+    gap: 1mm;
+    padding: 2mm 2.2mm;
+    border: 1px solid var(--print-line);
+    border-left: 2px solid var(--print-line);
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+  }
+
+  .soul-scar-card-head strong {
+    font-size: 8.4pt;
+  }
+
+  .soul-scar-card-head span,
+  .soul-scar-card-head b,
+  .soul-scar-duration,
+  .soul-scar-card p,
+  .soul-scar-card small {
+    font-size: 7pt;
+  }
+
+  .soul-scar-sheet-rule {
+    display: none;
   }
 
   .section-magic,
