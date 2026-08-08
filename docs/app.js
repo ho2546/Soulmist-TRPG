@@ -80,14 +80,14 @@ const races = {
 };
 
 const classes = {
-  "戰士": { hitDie: 10, hpBase: 10, proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血精英", "黑騎士", "獸群領袖", "聖堂騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
-  "野蠻人": { hitDie: 12, hpBase: 12, proficiencies: ["簡易武器", "軍用武器", "盾牌"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["破壞者", "灰燼狂戰士", "戰事之主"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
-  "遊蕩者": { hitDie: 8, hpBase: 8, proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["詐術師", "刺客", "縱火師"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
-  "武僧": { hitDie: 8, hpBase: 8, proficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["風行者", "啟迪僧", "原初門徒"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
-  "探索者": { hitDie: 10, hpBase: 10, proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["馴獸師", "護林者", "審判者", "斥候"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
-  "學者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["特使", "工程師", "草藥師"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
-  "靈術師": { hitDie: 8, hpBase: 8, proficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["死靈師", "薩滿", "巫醫", "醫師"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
-  "織霧者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素使", "血法師", "先知"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
+  "戰士": { hitDie: 10, hpBase: 10, proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血精英", "黑騎士", "獸群領袖", "聖堂騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
+  "野蠻人": { hitDie: 12, hpBase: 12, proficiencies: ["簡易武器", "軍用武器", "盾牌"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["破壞者", "灰燼狂戰士", "戰事之主"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
+  "遊蕩者": { hitDie: 8, hpBase: 8, proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], weaponProficiencies: ["簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["詐術師", "刺客", "縱火師"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
+  "武僧": { hitDie: 8, hpBase: 8, proficiencies: ["簡易武器", "短劍"], weaponProficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["風行者", "啟迪僧", "原初門徒"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
+  "探索者": { hitDie: 10, hpBase: 10, proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["馴獸師", "護林者", "審判者", "斥候"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
+  "學者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], weaponProficiencies: ["匕首", "標槍", "長棍", "輕弩"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["特使", "工程師", "草藥師"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
+  "靈術師": { hitDie: 8, hpBase: 8, proficiencies: ["匕首", "簡易武器"], weaponProficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["死靈師", "薩滿", "巫醫", "醫師"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
+  "織霧者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], weaponProficiencies: ["匕首", "飛鏢", "投石索", "輕弩"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素使", "血法師", "先知"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
 };
 
 const subclassSummaries = {
@@ -140,6 +140,7 @@ const sampleCharacter = {
   conditionNotes: "專注中、半掩蔽、低光環境觀察優勢", tacticalNotes: "對施法者保留反制法術；被近身時優先迷霧步脫離",
   armorType: "leather", shieldMode: "none", acOverride: "", cp: 12, sp: 25, gp: 84, pp: 1, carryOverride: "", carryWeight: 41,
   weaponEntries: "秘銀匕首|dex|yes|1d4|穿刺|可投擲、輕型\n短杖|int|yes|1d6|力場|法器導引\n爪擊|str|yes|1d4|揮砍|半變形時可用",
+  additionalWeaponProficiencies: "短杖", additionalLanguages: "古艾維尼安語、商會暗語",
   weaponLoadout: "秘銀匕首、短杖、皮甲、時刻沙漏", inventoryNotes: "施法材料包、旅行日誌、火把 x4、口糧 x6、繩索",
   spellbook: "戲法：光亮術、霧觸、法師之手\n1環：護盾術、羽落術、偵測魔法、睡眠術\n2環：迷霧步、鏡影術、定身術\n3環：反制法術、催眠圖紋",
   spellEntries: "0|光亮術|常駐|照明\n0|霧觸|常駐|近距干擾\n1|護盾術|準備|反應保命\n2|迷霧步|準備|保留脫離戰場\n2|鏡影術|準備|自保\n3|反制法術|準備|壓制敵方法師\n3|催眠圖紋|已用|剛剛的大戰已施放",
@@ -311,6 +312,8 @@ function renderSheet(state, finalAbilities, skills, proficiency) {
   const spellSummary = getSpellSummary(state, classData, finalAbilities, proficiency);
   const parsedSpells = parseSpellEntries(state.spellEntries);
   const parsedWeapons = parseWeaponEntries(state.weaponEntries, finalAbilities, proficiency);
+  const weaponProficiencies = mergeProficiencies(classData.weaponProficiencies, state.additionalWeaponProficiencies);
+  const languageProficiencies = mergeProficiencies(raceData.languages, state.additionalLanguages);
   const resourceCaps = getClassResourceCaps(state, classData, finalAbilities);
   const subclassSummary = getSubclassSummary(state.class, state.subclass);
   const quickResources = getQuickResources(state, resourceCaps);
@@ -357,8 +360,12 @@ function renderSheet(state, finalAbilities, skills, proficiency) {
     ]), "section-combat")}
     ${section("屬性", `<div class="ability-preview-grid">${abilities.map((ability) => renderAbilityCard(ability, finalAbilities[ability.key])).join("")}</div>`, "section-abilities")}
     ${section("技能", `<div class="sheet-skills-grid">${getHighlightedSkills(skills).map(renderSheetSkill).join("")}</div>`, "section-skills")}
+    ${section("熟練與語言", featureGrid([
+      featureBox("武器熟練", weaponProficiencies, "feature-box-gear"),
+      featureBox("語言熟練", languageProficiencies, "feature-box-lore"),
+    ]), "section-proficiencies")}
     ${section("種族能力", featureGrid([
-      featureBox("種族摘要", [`初始幽冥：${getStartingGloom(state.race)}`, `語言：${raceData.languages.join("、")}`, `主要特色：${raceData.summary}`], "feature-box-lore"),
+      featureBox("種族摘要", [`初始幽冥：${getStartingGloom(state.race)}`, `語言：${languageProficiencies.join("、")}`, `主要特色：${raceData.summary}`], "feature-box-lore"),
       featureBox("種族特性", [...raceData.traits, `祝福：${raceData.blessing}`], "feature-box-lore"),
     ]), "section-race")}
     ${section("職業能力", featureGrid([
@@ -780,6 +787,10 @@ function getAbilityLabel(key) { return abilities.find((item) => item.key === key
 function getAbilityKeyByLabel(label) { return abilities.find((item) => item.label === label)?.key || null; }
 function getModifier(score) { return Math.floor((score - 10) / 2); }
 function getProficiencyBonus(level) { return Math.floor((Math.max(1, toNumber(level, 1)) - 1) / 4) + 2; }
+function mergeProficiencies(baseItems, additionalItems) {
+  const extras = String(additionalItems || "").split(/[、,，;；\n]/).map((item) => item.trim()).filter(Boolean);
+  return [...new Set([...(baseItems || []), ...extras])];
+}
 function normalizeSubclass(className, subclassName) { return subclassAliases[className]?.[subclassName] || subclassName; }
 function toNumber(value, fallback = 0) { if (value === null || value === undefined || value === "") return fallback; const parsed = Number(value); return Number.isFinite(parsed) ? parsed : fallback; }
 function formatSigned(number) { return `${number >= 0 ? "+" : ""}${number}`; }

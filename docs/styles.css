@@ -755,6 +755,7 @@ textarea:focus {
 .workspace[data-mobile-mode="session"] .section-lore,
 .workspace[data-mobile-mode="session"] .section-abilities,
 .workspace[data-mobile-mode="session"] .section-skills,
+.workspace[data-mobile-mode="session"] .section-proficiencies,
 .workspace[data-mobile-mode="session"] .section-race,
 .workspace[data-mobile-mode="session"] .section-class,
 .workspace[data-mobile-mode="session"] .section-subclass,
@@ -1051,6 +1052,14 @@ textarea:focus {
   grid-column: 5 / 13;
 }
 
+.section-proficiencies {
+  grid-column: 1 / 13;
+}
+
+.section-proficiencies .feature-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .section-race,
 .section-class,
 .section-subclass {
@@ -1264,6 +1273,7 @@ textarea:focus {
   .section-combat,
   .section-abilities,
   .section-skills,
+  .section-proficiencies,
   .section-race,
   .section-class,
   .section-subclass,
@@ -1277,6 +1287,7 @@ textarea:focus {
   }
 
   .section-skills,
+  .section-proficiencies,
   .section-notes {
     grid-column: 1 / -1;
   }
@@ -1566,33 +1577,38 @@ textarea:focus {
     line-height: 1.05;
   }
 
-  .sheet-section:nth-of-type(5),
-  .sheet-section:nth-of-type(6),
-  .sheet-section:nth-of-type(7),
-  .sheet-section:last-of-type {
+  .section-race,
+  .section-class,
+  .section-subclass,
+  .section-notes {
     display: none;
   }
 
-  .sheet-section:nth-of-type(1) {
+  .section-lore {
     grid-column: 1 / 3;
   }
 
-  .sheet-section:nth-of-type(2) {
+  .section-combat {
     grid-column: 3;
   }
 
-  .sheet-section:nth-of-type(3) {
+  .section-abilities {
     grid-column: 1;
   }
 
-  .sheet-section:nth-of-type(4) {
+  .section-skills {
     grid-column: 2 / 4;
   }
 
-  .sheet-section:nth-of-type(8),
-  .sheet-section:nth-of-type(9),
-  .sheet-section:nth-of-type(10),
-  .sheet-section:nth-of-type(11) {
+  .section-proficiencies {
+    grid-column: 1 / -1;
+  }
+
+  .section-magic,
+  .section-spells,
+  .section-weapons,
+  .section-gear,
+  .section-trackers {
     grid-column: auto;
   }
 
