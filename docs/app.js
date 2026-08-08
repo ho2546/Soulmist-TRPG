@@ -10,24 +10,27 @@ const abilities = [
 ];
 
 const skillDefinitions = [
-  { key: "acrobatics", label: "特技", ability: "dex" },
-  { key: "animal", label: "馴獸", ability: "wis" },
-  { key: "arcana", label: "奧秘", ability: "int" },
   { key: "athletics", label: "運動", ability: "str" },
-  { key: "deception", label: "欺瞞", ability: "cha" },
-  { key: "history", label: "歷史", ability: "int" },
-  { key: "insight", label: "洞悉", ability: "wis" },
-  { key: "intimidation", label: "威嚇", ability: "cha" },
-  { key: "investigation", label: "調查", ability: "int" },
-  { key: "medicine", label: "醫藥", ability: "wis" },
-  { key: "nature", label: "自然", ability: "int" },
-  { key: "perception", label: "察覺", ability: "wis" },
-  { key: "performance", label: "表演", ability: "cha" },
-  { key: "persuasion", label: "說服", ability: "cha" },
-  { key: "religion", label: "宗教", ability: "int" },
+  { key: "acrobatics", label: "特技", ability: "dex" },
   { key: "sleight", label: "巧手", ability: "dex" },
   { key: "stealth", label: "隱匿", ability: "dex" },
-  { key: "survival", label: "求生", ability: "wis" },
+  { key: "crafting", label: "造物", ability: "dex" },
+  { key: "gloomKnowledge", label: "幽冥知識", ability: "int" },
+  { key: "history", label: "歷史", ability: "int" },
+  { key: "academics", label: "學術", ability: "int" },
+  { key: "investigation", label: "調查", ability: "int" },
+  { key: "nature", label: "自然", ability: "int" },
+  { key: "soulmistKnowledge", label: "靈魂迷霧知識", ability: "int" },
+  { key: "tradition", label: "傳統", ability: "int" },
+  { key: "animal", label: "馴獸", ability: "wis" },
+  { key: "insight", label: "洞悉", ability: "wis" },
+  { key: "medicine", label: "醫藥", ability: "wis" },
+  { key: "perception", label: "察覺", ability: "wis" },
+  { key: "survival", label: "生存", ability: "wis" },
+  { key: "deception", label: "欺瞞", ability: "cha" },
+  { key: "intimidation", label: "威嚇", ability: "cha" },
+  { key: "performance", label: "表演", ability: "cha" },
+  { key: "persuasion", label: "遊說", ability: "cha" },
 ];
 
 const armorTypes = [
@@ -74,7 +77,7 @@ const halfCasterSlots = {
 const races = {
   "盧明人": { bonuses: { int: 2 }, speed: 30, languages: ["通用語", "任選另一語言"], traits: ["學術天才", "啟蒙教育"], blessing: "菲耶拉的賜福：永恆沙漏見證者", summary: "以預視能力、知識社會與衰老代價為核心。", specialFields: [{ type: "number", name: "lumenAging", label: "衰老等級", min: 0, value: 0 }, { type: "number", name: "lumenExhaustion", label: "力竭等級", min: 0, value: 0 }] },
   "普萊默斯人": { bonuses: {}, speed: 30, languages: ["通用語", "普萊默斯語"], traits: ["烈酒肉體", "血釀祝福"], blessing: "飲宴與鮮血的傳承", summary: "靠飲酒、血性與祝福驅動的前線生存者。", specialFields: [{ type: "select", name: "primusBonusTarget", label: "屬性加值目標", options: abilities.map((item) => item.label) }, { type: "number", name: "lastDrinkDays", label: "距離上次飲酒天數", min: 0, value: 0 }, { type: "select", name: "bloodBlessingMode", label: "血釀祝福狀態", options: ["未啟動", "強韌肉體", "狂暴衝鋒", "恐懼 / 威嚇", "鮮血回春"] }] },
-  "艾維尼安人": { bonuses: {}, speed: 30, languages: ["敘靈語"], traits: ["動物之靈與半變形", "完全變形能力"], blessing: "獸靈與轉化", summary: "與動物之靈締約，可在半變形與全變形間切換。", specialFields: [{ type: "select", name: "avianGroup", label: "部族", options: ["曙羽", "夜爪", "潮喙", "朽角", "峽奔", "月翎"] }, { type: "select", name: "avianBonusTarget", label: "屬性加值目標", options: abilities.map((item) => item.label) }, { type: "text", name: "animalSpirit", label: "動物之靈", placeholder: "例如：雪梟、黑狼、山羚" }, { type: "text", name: "spiritSkill", label: "靈魂技能", placeholder: "例如：察覺、隱匿、求生" }, { type: "text", name: "alwaysOnTrait", label: "常駐靈性特徵", placeholder: "例如：夜視、攀爬、嗅覺敏銳" }, { type: "select", name: "shapeshiftState", label: "變形狀態", options: ["常態", "半變形", "全變形"] }, { type: "textarea", name: "halfFormTraits", label: "半變形特徵", rows: 3, placeholder: "列出獲得的移動、感官、攻擊或社交變化" }, { type: "textarea", name: "fullFormTraits", label: "全變形特徵", rows: 3, placeholder: "列出完整獸形的能力與限制" }] },
+  "艾維尼安人": { bonuses: {}, speed: 30, languages: ["敘靈語"], traits: ["動物之靈與半變形", "完全變形能力"], blessing: "獸靈與轉化", summary: "與動物之靈締約，可在半變形與全變形間切換。", specialFields: [{ type: "select", name: "avianGroup", label: "部族", options: ["曙羽", "夜爪", "潮喙", "朽角", "峽奔", "月翎"] }, { type: "select", name: "avianBonusTarget", label: "屬性加值目標", options: abilities.map((item) => item.label) }, { type: "text", name: "animalSpirit", label: "動物之靈", placeholder: "例如：雪梟、黑狼、山羚" }, { type: "text", name: "spiritSkill", label: "靈魂技能", placeholder: "例如：察覺、隱匿、生存" }, { type: "text", name: "alwaysOnTrait", label: "常駐靈性特徵", placeholder: "例如：夜視、攀爬、嗅覺敏銳" }, { type: "select", name: "shapeshiftState", label: "變形狀態", options: ["常態", "半變形", "全變形"] }, { type: "textarea", name: "halfFormTraits", label: "半變形特徵", rows: 3, placeholder: "列出獲得的移動、感官、攻擊或社交變化" }, { type: "textarea", name: "fullFormTraits", label: "全變形特徵", rows: 3, placeholder: "列出完整獸形的能力與限制" }] },
   "東德雷塞爾人": { bonuses: {}, speed: 30, languages: ["通用語", "德雷塞爾古語"], traits: ["深幽適應", "幽冥承受力"], blessing: "地底祖靈", summary: "長於高幽冥環境，面對黑暗與侵蝕更能硬扛。", specialFields: [{ type: "text", name: "eastBranchNote", label: "東支習俗 / 備註", placeholder: "例如：黑巖城獵團、礦道誓約" }] },
   "西德雷塞爾人": { bonuses: { cha: 2 }, speed: 30, languages: ["通用語", "德雷塞爾古語"], traits: ["樹子外殼", "生命守護"], blessing: "樹心古誓", summary: "以樹皮般的外殼與生命庇護，兼具韌性與神祕氣質。", specialFields: [{ type: "select", name: "treeChildMode", label: "樹子外殼模式", options: ["自然護甲 13 + 體質", "敏捷導向戰鬥", "魅力引導儀式"] }] },
 };
@@ -145,13 +148,13 @@ const sampleCharacter = {
   spellbook: "戲法：光亮術、霧觸、法師之手\n1環：護盾術、羽落術、偵測魔法、睡眠術\n2環：迷霧步、鏡影術、定身術\n3環：反制法術、催眠圖紋",
   spellEntries: "0|光亮術|常駐|照明\n0|霧觸|常駐|近距干擾\n1|護盾術|準備|反應保命\n2|迷霧步|準備|保留脫離戰場\n2|鏡影術|準備|自保\n3|反制法術|準備|壓制敵方法師\n3|催眠圖紋|已用|剛剛的大戰已施放",
   spellNotes: "常駐專注：催眠圖紋 / 鏡影術輪換。團戰前先留 1 個 2環位給迷霧步。",
-  skillNotes: "專長：觀察者。專精：奧秘、調查。", notes: "與團內戰士共享敵方行動預測。若幽冥升到 3 以上，優先保命撤退。",
+  skillNotes: "專長：觀察者。專精：靈魂迷霧知識、調查。", notes: "與團內戰士共享敵方行動預測。若幽冥升到 3 以上，優先保命撤退。",
   animalSpirit: "灰羽夜梟", spiritSkill: "察覺", alwaysOnTrait: "昏暗視野中察覺檢定優勢", shapeshiftState: "半變形",
   halfFormTraits: "眼部與羽翼顯現，可短距滑翔，夜視增強。", fullFormTraits: "化為大型夜梟，獲得飛行與俯衝，但無法正常施法。",
   avianGroup: "潮喙", avianBonusTarget: "智力", timeSightUses: 2, arcaneRecoveryUsed: 0,
   slot1Current: 4, slot1Max: 4, slot2Current: 3, slot2Max: 3, slot3Current: 2, slot3Max: 2, slot4Current: 0, slot4Max: 0, slot5Current: 0, slot5Max: 0, slot6Current: 0, slot6Max: 0, slot7Current: 0, slot7Max: 0, slot8Current: 0, slot8Max: 0, slot9Current: 0, slot9Max: 0,
   str: 8, dex: 14, con: 14, int: 16, wis: 13, cha: 12,
-  skill_arcana_mode: "expertise", skill_arcana_misc: 0, skill_history_mode: "proficient", skill_history_misc: 0, skill_investigation_mode: "expertise", skill_investigation_misc: 0, skill_perception_mode: "proficient", skill_perception_misc: 1, skill_insight_mode: "proficient", skill_insight_misc: 0, skill_stealth_mode: "proficient", skill_stealth_misc: 0,
+  skill_soulmistKnowledge_mode: "expertise", skill_soulmistKnowledge_misc: 0, skill_history_mode: "proficient", skill_history_misc: 0, skill_investigation_mode: "expertise", skill_investigation_misc: 0, skill_perception_mode: "proficient", skill_perception_misc: 1, skill_insight_mode: "proficient", skill_insight_misc: 0, skill_stealth_mode: "proficient", skill_stealth_misc: 0,
 };
 
 const form = document.getElementById("characterForm");
@@ -258,6 +261,7 @@ function populateDefaults() {
 }
 
 function populateForm(data) {
+  data = migrateLegacySkills(data);
   if (data.race && races[data.race]) form.elements.race.value = data.race;
   if (data.class && classes[data.class]) form.elements.class.value = data.class;
   if (data.class && data.subclass) data = { ...data, subclass: normalizeSubclass(data.class, data.subclass) };
@@ -269,6 +273,18 @@ function populateForm(data) {
   rebuildDynamicFields();
   rebuildSpellManager();
   Object.entries(data).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value ?? ""; });
+}
+
+function migrateLegacySkills(data) {
+  const migrated = { ...data };
+  [["arcana", "soulmistKnowledge"], ["religion", "tradition"]].forEach(([legacyKey, currentKey]) => {
+    ["mode", "misc"].forEach((suffix) => {
+      const legacyField = `skill_${legacyKey}_${suffix}`;
+      const currentField = `skill_${currentKey}_${suffix}`;
+      if (migrated[currentField] === undefined && migrated[legacyField] !== undefined) migrated[currentField] = migrated[legacyField];
+    });
+  });
+  return migrated;
 }
 
 function getState() {
