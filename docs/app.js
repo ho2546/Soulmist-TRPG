@@ -787,10 +787,10 @@ function renderSoulScarDeck(scars, gloomLevel) {
 function spellActionDeck(spells) {
   if (!spells.length) return `<article class="feature-box feature-box-magic empty-card"><h4>法術動作</h4><div class="empty">尚未設定法術卡。</div></article>`;
   return `<div class="spell-action-deck">${spells.map((spell, index) => {
-    const methodText = spell.method === "attack" ? `攻擊 ${formatSigned(spell.attackBonus)}${spell.attackBonusDice ? ` + ${spell.attackBonusDice}` : ""}` : spell.method === "save" ? `${getAbilityLabel(spell.saveAbility)}豁免 DC ${spell.saveDc}` : spell.method === "auto" ? "自動命中 / 治療" : "功能型";
+    const methodText = spell.method === "attack" ? `命中檢定 d20 ${formatSigned(spell.attackBonus)}${spell.attackBonusDice ? ` + ${spell.attackBonusDice}` : ""}` : spell.method === "save" ? `${getAbilityLabel(spell.saveAbility)}豁免 DC ${spell.saveDc}` : spell.method === "auto" ? "自動命中 / 治療" : "功能型";
     const damageText = spell.damageDie ? spell.damageText : "無傷害擲骰";
-    const attackButtons = spell.method === "attack" ? `<button type="button" class="weapon-roll-btn is-primary" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="normal">攻擊</button><button type="button" class="weapon-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="advantage">優勢</button><button type="button" class="weapon-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="disadvantage">劣勢</button>` : "";
-    const damageButtons = spell.damageDie ? `<button type="button" class="weapon-roll-btn is-damage" data-action="roll-spell-damage" data-spell-index="${index}">傷害</button>${spell.method === "attack" ? `<button type="button" class="weapon-roll-btn is-critical" data-action="roll-spell-critical" data-spell-index="${index}">重擊</button>` : ""}${spell.upcastDice ? `<button type="button" class="weapon-roll-btn is-upcast" data-action="roll-spell-upcast" data-spell-index="${index}">升環 +1</button>` : ""}` : "";
+    const attackButtons = spell.method === "attack" ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-primary" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="normal"><span>命中檢定</span><small>d20 ${formatSigned(spell.attackBonus)}</small></button><button type="button" class="weapon-roll-btn spell-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="advantage"><span>優勢命中</span><small>2d20 取高</small></button><button type="button" class="weapon-roll-btn spell-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="disadvantage"><span>劣勢命中</span><small>2d20 取低</small></button>` : "";
+    const damageButtons = spell.damageDie ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-damage" data-action="roll-spell-damage" data-spell-index="${index}"><span>${spell.damageType === "治療" ? "治療擲骰" : "傷害擲骰"}</span><small>${escapeHtml(spell.damageDie)}</small></button>${spell.method === "attack" ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-critical" data-action="roll-spell-critical" data-spell-index="${index}"><span>重擊傷害</span><small>傷害骰 ×2</small></button>` : ""}${spell.upcastDice ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-upcast" data-action="roll-spell-upcast" data-spell-index="${index}"><span>升環 +1</span><small>+${escapeHtml(spell.upcastDice)}</small></button>` : ""}` : "";
     return `<article class="spell-action-card">
       <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(spell.name)}</span><span class="spell-level-badge">${spell.levelLabel}</span></div>
       <div class="spell-action-stats"><span>${escapeHtml(methodText)}</span><strong>${escapeHtml(damageText)}</strong><span>${escapeHtml(spell.status)}</span></div>
@@ -1056,7 +1056,7 @@ function rollSpellAttack(index, mode) {
   const total = natural + spell.attackBonus + (extraDice?.total || 0);
   const outcome = natural === 20 ? "重擊！可點法術的「重擊」擲雙倍傷害骰。" : natural === 1 ? "大失敗" : "";
   const tone = natural === 20 ? "critical" : natural === 1 ? "fumble" : "attack";
-  const modeLabel = mode === "advantage" ? "優勢" : mode === "disadvantage" ? "劣勢" : "法術攻擊";
+  const modeLabel = mode === "advantage" ? "優勢命中檢定（2d20 取高）" : mode === "disadvantage" ? "劣勢命中檢定（2d20 取低）" : "命中檢定（d20）";
   recordDiceRoll({ title: `${spell.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(spell.attackBonus)}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}`, outcome, tone }, ".section-spells");
 }
 

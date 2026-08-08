@@ -1676,6 +1676,28 @@ textarea:focus {
   font-size: 0.78rem;
 }
 
+.spell-roll-btn {
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  min-height: 52px;
+}
+
+.spell-roll-btn span {
+  font-weight: 800;
+}
+
+.spell-roll-btn small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.spell-roll-btn.is-primary small {
+  color: rgba(255, 253, 249, 0.76);
+}
+
 .weapon-roll-btn.is-primary {
   border-color: transparent;
   background: var(--accent);
