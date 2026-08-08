@@ -863,6 +863,190 @@ textarea:focus {
   font-size: 1.2rem;
 }
 
+.weapon-builder {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, rgba(251, 249, 244, 0.94), rgba(238, 232, 221, 0.82));
+}
+
+.weapon-builder-head,
+.weapon-editor-card-head,
+.dice-tray-head,
+.weapon-action-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.weapon-builder-head .field-title {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.weapon-builder-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.compact-btn {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  box-shadow: none;
+}
+
+.weapon-editor {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.weapon-editor-card {
+  padding: 14px;
+  border: 1px solid rgba(53, 61, 56, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.weapon-editor-card-head {
+  margin-bottom: 12px;
+}
+
+.text-btn {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  font-size: 0.8rem;
+}
+
+.danger-text {
+  color: var(--danger);
+}
+
+.weapon-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.weapon-field-name,
+.weapon-field-note {
+  grid-column: span 2;
+}
+
+.weapon-entries-source {
+  display: none;
+}
+
+.weapon-editor-empty {
+  display: grid;
+  gap: 4px;
+  padding: 22px;
+  border: 1px dashed rgba(53, 61, 56, 0.22);
+  border-radius: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.weapon-combat-layout {
+  display: grid;
+  gap: 12px;
+}
+
+.dice-tray {
+  overflow: hidden;
+  border: 1px solid rgba(47, 90, 75, 0.22);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(31, 39, 36, 0.98), rgba(47, 90, 75, 0.96));
+  color: #fffdf9;
+  box-shadow: 0 12px 24px rgba(31, 39, 36, 0.16);
+}
+
+.dice-tray-empty {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+}
+
+.dice-tray-empty span,
+.dice-tray-head,
+.dice-latest span {
+  color: rgba(255, 253, 249, 0.7);
+  font-size: 0.8rem;
+}
+
+.dice-tray-head {
+  padding: 10px 14px 0;
+}
+
+.dice-tray .text-btn {
+  color: rgba(255, 253, 249, 0.72);
+}
+
+.dice-latest {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px 14px;
+}
+
+.dice-latest > div {
+  display: grid;
+  gap: 5px;
+}
+
+.dice-latest b {
+  min-width: 58px;
+  font-family: "Noto Serif TC", "Palatino Linotype", serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  text-align: right;
+}
+
+.dice-outcome {
+  padding: 9px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.dice-tray.tone-critical {
+  border-color: rgba(202, 164, 80, 0.6);
+  background: linear-gradient(135deg, #49371e, #8e6832);
+}
+
+.dice-tray.tone-fumble {
+  border-color: rgba(159, 61, 43, 0.58);
+  background: linear-gradient(135deg, #3a2624, #783c34);
+}
+
+.dice-history {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dice-history > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.76rem;
+}
+
+.dice-history small {
+  overflow: hidden;
+  color: rgba(255, 253, 249, 0.58);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .weapon-action-deck {
   display: grid;
   gap: 12px;
@@ -883,6 +1067,29 @@ textarea:focus {
   box-shadow: 0 10px 18px rgba(34, 30, 23, 0.08);
 }
 
+.weapon-action-type {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(142, 119, 81, 0.12);
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.weapon-action-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.weapon-action-stats > * {
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--ink);
+  font-size: 0.84rem;
+}
+
 .weapon-action-name {
   color: var(--accent);
   font-size: 1rem;
@@ -895,7 +1102,7 @@ textarea:focus {
 }
 
 .weapon-action-damage {
-  font-size: 1.35rem;
+  font-size: 0.92rem;
   line-height: 1.1;
 }
 
@@ -1067,6 +1274,40 @@ textarea:focus {
 
 .section-skills {
   grid-column: 5 / 13;
+}
+
+.weapon-roll-actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.weapon-roll-btn {
+  min-height: 38px;
+  padding: 8px 6px;
+  border: 1px solid rgba(47, 90, 75, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--accent);
+  box-shadow: none;
+  font-size: 0.78rem;
+}
+
+.weapon-roll-btn.is-primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fffdf9;
+}
+
+.weapon-roll-btn.is-damage {
+  color: var(--danger);
+}
+
+.weapon-roll-btn.is-critical {
+  border-color: rgba(142, 119, 81, 0.32);
+  color: #755725;
+  background: rgba(201, 168, 100, 0.16);
 }
 
 .section-proficiencies {
@@ -1316,6 +1557,10 @@ textarea:focus {
 }
 
 @media (max-width: 1260px) {
+  .weapon-editor-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .sheet-view {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1346,6 +1591,15 @@ textarea:focus {
 }
 
 @media (max-width: 900px) {
+  .weapon-editor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weapon-field-name,
+  .weapon-field-note {
+    grid-column: span 1;
+  }
+
   .sheet-view {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -1390,6 +1644,30 @@ textarea:focus {
 }
 
 @media (max-width: 760px) {
+  .weapon-builder-head {
+    align-items: flex-start;
+  }
+
+  .weapon-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weapon-action-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .weapon-roll-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dice-history > div {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .dice-history small {
+    display: none;
+  }
+
   .sheet-view {
     padding: 18px;
   }
@@ -1442,6 +1720,10 @@ textarea:focus {
 }
 
 @media (max-width: 460px) {
+  .weapon-action-stats {
+    grid-template-columns: 1fr;
+  }
+
   .stat-grid,
   .sheet-skills-grid,
   .ability-preview-grid {

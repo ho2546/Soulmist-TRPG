@@ -166,12 +166,15 @@ const dynamicFields = document.getElementById("dynamicFields");
 const abilityInputs = document.getElementById("abilityInputs");
 const skillInputs = document.getElementById("skillInputs");
 const spellManager = document.getElementById("spellManager");
+const weaponEditor = document.getElementById("weaponEditor");
+const addWeaponBtn = document.getElementById("addWeaponBtn");
 const sheetView = document.getElementById("sheetView");
 const importFileInput = document.getElementById("importFileInput");
 const proficiencyPreview = document.getElementById("proficiencyPreview");
 const passivePerceptionPreview = document.getElementById("passivePerceptionPreview");
 const workspace = document.querySelector(".workspace");
 const modeButtons = document.querySelectorAll(".mode-btn");
+const diceRollHistory = [];
 
 document.getElementById("loadSampleBtn").addEventListener("click", () => { populateForm(sampleCharacter); updateAll(); });
 document.getElementById("applySlotsBtn").addEventListener("click", () => { applySpellSlotsFromProgression(); updateAll(); });
@@ -181,8 +184,11 @@ document.getElementById("importBtn").addEventListener("click", () => importFileI
 document.getElementById("exportBtn").addEventListener("click", exportJson);
 document.getElementById("resetBtn").addEventListener("click", resetForm);
 document.getElementById("printBtn").addEventListener("click", () => window.print());
+addWeaponBtn.addEventListener("click", addWeaponEntry);
 importFileInput.addEventListener("change", importJson);
 form.addEventListener("input", updateAll);
+weaponEditor.addEventListener("input", syncWeaponEntriesFromEditor);
+weaponEditor.addEventListener("click", handleWeaponEditorActions);
 sheetView.addEventListener("click", handleSheetActions);
 form.addEventListener("change", (event) => {
   if (event.target.name === "race" || event.target.name === "class") { rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); }
@@ -208,6 +214,7 @@ function init() {
   applyClassSavingThrows();
   const saved = loadState();
   if (saved) populateForm(saved);
+  else buildWeaponEditor();
   updateAll();
 }
 
@@ -232,6 +239,76 @@ function applyClassSavingThrows() {
 function buildSkillInputs() {
   skillInputs.innerHTML = skillDefinitions.map((skill) => `<div class="skill-card"><div class="skill-head"><div><h4>${skill.label}</h4><p>${getAbilityLabel(skill.ability)} 技能</p></div><div class="skill-value" id="skillPreview_${skill.key}">+0</div></div><label><span>熟練狀態</span><select name="skill_${skill.key}_mode"><option value="none">未熟練</option><option value="proficient">熟練</option><option value="expertise">專精</option></select></label><label><span>額外修正</span><input type="number" name="skill_${skill.key}_misc" value="0"></label></div>`).join("");
 }
+
+function buildWeaponEditor() {
+  const entries = parseWeaponEntryDefinitions(form.elements.weaponEntries.value);
+  weaponEditor.innerHTML = entries.length ? entries.map(renderWeaponEditorCard).join("") : `<div class="weapon-editor-empty"><strong>還沒有武器</strong><span>按「新增武器」建立第一張可擲骰武器卡。</span></div>`;
+}
+
+function renderWeaponEditorCard(weapon, index) {
+  const abilityOptions = abilities.map((ability) => `<option value="${ability.key}" ${weapon.abilityKey === ability.key ? "selected" : ""}>${ability.label}</option>`).join("");
+  const damageTypes = ["鈍擊", "穿刺", "揮砍", "火焰", "寒冷", "雷電", "毒素", "光耀", "黯蝕", "心靈", "力場"];
+  const damageTypeOptions = damageTypes.map((type) => `<option value="${type}" ${weapon.damageType === type ? "selected" : ""}>${type}</option>`).join("");
+  return `<article class="weapon-editor-card" data-weapon-index="${index}">
+    <div class="weapon-editor-card-head"><strong>武器 ${index + 1}</strong><button type="button" class="text-btn danger-text" data-weapon-editor-action="remove">移除</button></div>
+    <div class="weapon-editor-grid">
+      <label class="weapon-field-name"><span>名稱</span><input type="text" data-weapon-field="name" value="${escapeHtml(weapon.name)}" placeholder="例如：長劍"></label>
+      <label><span>攻擊屬性</span><select data-weapon-field="abilityKey">${abilityOptions}</select></label>
+      <label><span>熟練</span><select data-weapon-field="proficient"><option value="yes" ${weapon.proficient ? "selected" : ""}>熟練</option><option value="no" ${weapon.proficient ? "" : "selected"}>未熟練</option></select></label>
+      <label><span>攻擊額外加值</span><input type="number" data-weapon-field="attackMisc" value="${weapon.attackMisc}"></label>
+      <label><span>傷害骰</span><input type="text" data-weapon-field="damageDie" value="${escapeHtml(weapon.damageDie)}" placeholder="例如：1d8 或 2d6+1"></label>
+      <label><span>傷害加入屬性</span><select data-weapon-field="damageAbility"><option value="yes" ${weapon.damageAbility ? "selected" : ""}>加入</option><option value="no" ${weapon.damageAbility ? "" : "selected"}>不加入</option></select></label>
+      <label><span>傷害額外加值</span><input type="number" data-weapon-field="damageMisc" value="${weapon.damageMisc}"></label>
+      <label><span>傷害類型</span><select data-weapon-field="damageType">${damageTypeOptions}${damageTypes.includes(weapon.damageType) ? "" : `<option value="${escapeHtml(weapon.damageType)}" selected>${escapeHtml(weapon.damageType)}</option>`}</select></label>
+      <label><span>重擊範圍</span><input type="number" data-weapon-field="critRange" min="2" max="20" value="${weapon.critRange}"></label>
+      <label class="weapon-field-note"><span>描述 / 射程 / 特性</span><input type="text" data-weapon-field="note" value="${escapeHtml(weapon.note)}" placeholder="例如：60 尺、可投擲、輕型"></label>
+    </div>
+  </article>`;
+}
+
+function addWeaponEntry() {
+  syncWeaponEntriesFromEditor();
+  const entries = parseWeaponEntryDefinitions(form.elements.weaponEntries.value);
+  entries.push({ name: "新武器", abilityKey: "str", proficient: true, damageDie: "1d6", damageType: "鈍擊", note: "", attackMisc: 0, damageMisc: 0, critRange: 20, damageAbility: true });
+  form.elements.weaponEntries.value = serializeWeaponEntries(entries);
+  buildWeaponEditor();
+  updateAll();
+  weaponEditor.querySelector(".weapon-editor-card:last-child input")?.focus();
+}
+
+function handleWeaponEditorActions(event) {
+  const button = event.target.closest("[data-weapon-editor-action]");
+  if (!button) return;
+  button.closest(".weapon-editor-card")?.remove();
+  syncWeaponEntriesFromEditor();
+  buildWeaponEditor();
+  updateAll();
+}
+
+function syncWeaponEntriesFromEditor() {
+  const entries = Array.from(weaponEditor.querySelectorAll(".weapon-editor-card")).map((card) => {
+    const value = (field) => card.querySelector(`[data-weapon-field="${field}"]`)?.value ?? "";
+    return {
+      name: value("name") || "未命名武器",
+      abilityKey: value("abilityKey") || "str",
+      proficient: value("proficient") === "yes",
+      damageDie: value("damageDie") || "1d6",
+      damageType: value("damageType") || "鈍擊",
+      note: value("note"),
+      attackMisc: toNumber(value("attackMisc"), 0),
+      damageMisc: toNumber(value("damageMisc"), 0),
+      critRange: Math.max(2, Math.min(20, toNumber(value("critRange"), 20))),
+      damageAbility: value("damageAbility") !== "no",
+    };
+  });
+  form.elements.weaponEntries.value = serializeWeaponEntries(entries);
+}
+
+function serializeWeaponEntries(entries) {
+  return entries.map((weapon) => [weapon.name, weapon.abilityKey, weapon.proficient ? "yes" : "no", weapon.damageDie, weapon.damageType, weapon.note, weapon.attackMisc, weapon.damageMisc, weapon.critRange, weapon.damageAbility ? "yes" : "no"].map(sanitizeWeaponField).join("|")).join("\n");
+}
+
+function sanitizeWeaponField(value) { return String(value ?? "").replace(/[|\r\n]+/g, " / ").trim(); }
 
 function rebuildSubclassOptions() {
   const classData = classes[form.elements.class.value];
@@ -283,6 +360,7 @@ function populateForm(data) {
   rebuildDynamicFields();
   rebuildSpellManager();
   Object.entries(data).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value ?? ""; });
+  buildWeaponEditor();
 }
 
 function migrateLegacySkills(data) {
@@ -417,10 +495,11 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
     ${section("施法摘要", featureGrid([featureBox("施法資料", spellSummary.lines, "feature-box-magic"), featureBox("法術與資源備註", spellSummary.notes, "feature-box-magic")]), "section-magic")}
     ${sessionQuickSection}
     ${section("法術清單", featureGrid([featureBox("結構化法術", parsedSpells.length ? parsedSpells.map((spell) => `${spell.levelLabel}｜${spell.name}｜${spell.status}${spell.note ? `｜${spell.note}` : ""}`) : ["尚未填寫結構化法術清單。"], "feature-box-magic"), featureBox("資源上限", getResourceCapLines(resourceCaps), "feature-box-magic")]), "section-spells")}
-    ${section("武器卡", featureGrid([
-      isSessionMode ? weaponActionDeck(parsedWeapons) : featureBox("結構化武器", parsedWeapons.length ? parsedWeapons.map((weapon) => `${weapon.name}｜命中 ${formatSigned(weapon.attackBonus)}｜傷害 ${weapon.damageText}${weapon.note ? `｜${weapon.note}` : ""}`) : ["尚未填寫結構化武器卡。"], "feature-box-gear"),
-      featureBox("戰鬥節奏提醒", [`先攻順位：${state.initiativeScore ?? "未填寫"}`, `專注：${state.concentrationState === "active" ? "進行中" : "未專注"}`, state.tacticalNotes || "尚未填寫戰術提醒。"], "feature-box-combat"),
-    ]), "section-weapons")}
+    ${section("武器與擲骰", `<div class="weapon-combat-layout">
+      ${renderDiceTray()}
+      ${weaponActionDeck(parsedWeapons)}
+      ${featureBox("戰鬥節奏提醒", [`先攻順位：${state.initiativeScore ?? "未填寫"}`, `專注：${state.concentrationState === "active" ? "進行中" : "未專注"}`, state.tacticalNotes || "尚未填寫戰術提醒。"], "feature-box-combat weapon-tactics")}
+    </div>`, "section-weapons")}
     ${section("裝備與金錢", featureGrid([
       featureBox("裝備配置", [`護甲：${getArmorLabel(state.armorType)}`, `盾牌：${state.shieldMode === "shield" ? "裝備中" : "未裝備"}`, `武器與護具：${state.weaponLoadout || "未填寫"}`, `攜帶重量：${state.carryWeight ?? 0} / ${carryCapacity}`], "feature-box-gear"),
       featureBox("財務與背包", [`CP：${state.cp ?? 0} / SP：${state.sp ?? 0} / GP：${state.gp ?? 0} / PP：${state.pp ?? 0}`, state.inventoryNotes || "未填寫背包與雜物。"], "feature-box-gear"),
@@ -486,12 +565,29 @@ function renderQuickResources(resources) {
 }
 function weaponActionDeck(weapons) {
   if (!weapons.length) return `<article class="feature-box feature-box-gear empty-card"><h4>武器動作</h4><div class="empty">尚未填寫結構化武器卡。</div></article>`;
-  return `<div class="weapon-action-deck">${weapons.map((weapon) => `<button type="button" class="weapon-action-card">
-    <span class="weapon-action-name">${escapeHtml(weapon.name)}</span>
-    <span class="weapon-action-attack">命中 ${formatSigned(weapon.attackBonus)}</span>
-    <strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong>
+  return `<div class="weapon-action-deck">${weapons.map((weapon, index) => `<article class="weapon-action-card">
+    <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(weapon.name)}</span><span class="weapon-action-type">${escapeHtml(weapon.damageType)}</span></div>
+    <div class="weapon-action-stats"><span class="weapon-action-attack">攻擊 ${formatSigned(weapon.attackBonus)}</span><strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong><span>重擊 ${weapon.critRange}–20</span></div>
     <span class="weapon-action-note">${escapeHtml(weapon.note || "標準攻擊動作")}</span>
-  </button>`).join("")}</div>`;
+    <div class="weapon-roll-actions print-hide">
+      <button type="button" class="weapon-roll-btn is-primary" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="normal">攻擊</button>
+      <button type="button" class="weapon-roll-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="advantage">優勢</button>
+      <button type="button" class="weapon-roll-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="disadvantage">劣勢</button>
+      <button type="button" class="weapon-roll-btn is-damage" data-action="roll-weapon-damage" data-weapon-index="${index}">傷害</button>
+      <button type="button" class="weapon-roll-btn is-critical" data-action="roll-weapon-critical" data-weapon-index="${index}">重擊</button>
+    </div>
+  </article>`).join("")}</div>`;
+}
+
+function renderDiceTray() {
+  if (!diceRollHistory.length) return `<aside class="dice-tray print-hide"><div class="dice-tray-empty"><strong>擲骰紀錄</strong><span>點擊武器上的攻擊或傷害按鈕，結果會顯示在這裡。</span></div></aside>`;
+  const [latest, ...previous] = diceRollHistory;
+  return `<aside class="dice-tray print-hide ${latest.tone ? `tone-${latest.tone}` : ""}">
+    <div class="dice-tray-head"><span>最新擲骰</span><button type="button" class="text-btn" data-action="clear-dice-history">清除</button></div>
+    <div class="dice-latest"><div><strong>${escapeHtml(latest.title)}</strong><span>${escapeHtml(latest.detail)}</span></div><b>${latest.total}</b></div>
+    ${latest.outcome ? `<div class="dice-outcome">${escapeHtml(latest.outcome)}</div>` : ""}
+    ${previous.length ? `<div class="dice-history">${previous.slice(0, 5).map((roll) => `<div><span>${escapeHtml(roll.title)}</span><small>${escapeHtml(roll.detail)}</small><strong>${roll.total}</strong></div>`).join("")}</div>` : ""}
+  </aside>`;
 }
 
 function getFinalAbilities(state) {
@@ -663,7 +759,80 @@ function handleSheetActions(event) {
     adjustSlotValue(toNumber(button.dataset.level, 0), toNumber(button.dataset.delta, 0));
   } else if (action === "adjust-resource") {
     adjustQuickResource(button.dataset.resource, toNumber(button.dataset.delta, 0));
+  } else if (action === "roll-weapon-attack") {
+    rollWeaponAttack(toNumber(button.dataset.weaponIndex, -1), button.dataset.rollMode || "normal");
+  } else if (action === "roll-weapon-damage") {
+    rollWeaponDamage(toNumber(button.dataset.weaponIndex, -1), false);
+  } else if (action === "roll-weapon-critical") {
+    rollWeaponDamage(toNumber(button.dataset.weaponIndex, -1), true);
+  } else if (action === "clear-dice-history") {
+    diceRollHistory.length = 0;
+    updateAll();
   }
+}
+
+function getCurrentWeapons() {
+  const state = getState();
+  return parseWeaponEntries(state.weaponEntries, getFinalAbilities(state), getProficiencyBonus(state.level));
+}
+
+function rollWeaponAttack(index, mode) {
+  const weapon = getCurrentWeapons()[index];
+  if (!weapon) return;
+  const rolls = mode === "normal" ? [rollDie(20)] : [rollDie(20), rollDie(20)];
+  const natural = mode === "advantage" ? Math.max(...rolls) : mode === "disadvantage" ? Math.min(...rolls) : rolls[0];
+  const modeLabel = mode === "advantage" ? "優勢" : mode === "disadvantage" ? "劣勢" : "攻擊";
+  const total = natural + weapon.attackBonus;
+  const outcome = natural >= weapon.critRange ? "重擊！可直接點武器的「重擊」擲傷害。" : natural === 1 ? "大失敗" : "";
+  const tone = natural >= weapon.critRange ? "critical" : natural === 1 ? "fumble" : "attack";
+  recordDiceRoll({ title: `${weapon.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(weapon.attackBonus)}`, outcome, tone });
+}
+
+function rollWeaponDamage(index, isCritical) {
+  const weapon = getCurrentWeapons()[index];
+  if (!weapon) return;
+  const result = rollDiceExpression(weapon.damageDie, isCritical ? 2 : 1);
+  const total = result.total + weapon.damageBonus;
+  recordDiceRoll({
+    title: `${weapon.name} · ${isCritical ? "重擊傷害" : "傷害"}`,
+    total,
+    detail: `${result.detail}${weapon.damageBonus ? ` ${formatSigned(weapon.damageBonus)}` : ""} ${weapon.damageType}`,
+    outcome: isCritical ? "已加倍所有武器傷害骰，屬性與固定加值不加倍。" : "",
+    tone: isCritical ? "critical" : "damage",
+  });
+}
+
+function rollDiceExpression(expression, multiplier = 1) {
+  const normalized = String(expression || "1d6").toLowerCase().replace(/\s+/g, "");
+  const tokens = normalized.match(/[+-]?[^+-]+/g) || ["1d6"];
+  let total = 0;
+  const details = [];
+  tokens.forEach((token) => {
+    const sign = token.startsWith("-") ? -1 : 1;
+    const body = token.replace(/^[+-]/, "");
+    const diceMatch = body.match(/^(\d*)d(\d+)$/);
+    if (diceMatch) {
+      const count = Math.max(1, Math.min(100, toNumber(diceMatch[1], 1))) * multiplier;
+      const sides = Math.max(2, Math.min(1000, toNumber(diceMatch[2], 6)));
+      const rolls = Array.from({ length: count }, () => rollDie(sides));
+      total += sign * rolls.reduce((sum, roll) => sum + roll, 0);
+      details.push(`${sign < 0 ? "- " : details.length ? "+ " : ""}${count}d${sides} [${rolls.join(", ")}]`);
+    } else {
+      const constant = toNumber(body, 0);
+      total += sign * constant;
+      details.push(`${sign < 0 ? "-" : "+"}${constant}`);
+    }
+  });
+  return { total, detail: details.join(" ") };
+}
+
+function rollDie(sides) { return Math.floor(Math.random() * sides) + 1; }
+
+function recordDiceRoll(result) {
+  diceRollHistory.unshift(result);
+  diceRollHistory.splice(8);
+  updateAll();
+  document.querySelector(".dice-tray")?.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function adjustFieldNumber(fieldName, delta) {
@@ -725,7 +894,7 @@ function adjustQuickResource(resourceLabel, delta) {
 }
 
 function syncCurrentHpToEstimate() { form.elements.currentHp.value = getEstimatedMaxHp(getState(), classes[getState().class], getFinalAbilities(getState())); }
-function resetForm() { localStorage.removeItem(STORAGE_KEY); form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); updateAll(); }
+function resetForm() { localStorage.removeItem(STORAGE_KEY); diceRollHistory.length = 0; form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); buildWeaponEditor(); updateAll(); }
 function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
 
@@ -793,14 +962,41 @@ function parseSpellEntries(text) {
   }).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, "zh-Hant"));
 }
 
-function parseWeaponEntries(text, finalAbilities, proficiency) {
+function parseWeaponEntryDefinitions(text) {
   if (!text) return [];
   return String(text).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
-    const [name = "", abilityKeyRaw = "str", proficientRaw = "yes", damageDie = "1d6", damageType = "鈍擊", note = ""] = line.split("|").map((part) => part.trim());
+    const [name = "", abilityKeyRaw = "str", proficientRaw = "yes", damageDie = "1d6", damageType = "鈍擊", note = "", attackMiscRaw = "0", damageMiscRaw = "0", critRangeRaw = "20", damageAbilityRaw = "yes"] = line.split("|").map((part) => part.trim());
     const abilityKey = ["str", "dex", "con", "int", "wis", "cha"].includes(abilityKeyRaw) ? abilityKeyRaw : "str";
-    const abilityMod = finalAbilities[abilityKey]?.mod ?? 0;
-    const isProficient = proficientRaw.toLowerCase() === "yes";
-    return { name: name || "未命名武器", attackBonus: abilityMod + (isProficient ? proficiency : 0), damageText: `${damageDie} ${formatSigned(abilityMod)} ${damageType}`, note };
+    return {
+      name: name || "未命名武器",
+      abilityKey,
+      proficient: proficientRaw.toLowerCase() === "yes",
+      damageDie: damageDie || "1d6",
+      damageType: damageType || "鈍擊",
+      note,
+      attackMisc: toNumber(attackMiscRaw, 0),
+      damageMisc: toNumber(damageMiscRaw, 0),
+      critRange: Math.max(2, Math.min(20, toNumber(critRangeRaw, 20))),
+      damageAbility: damageAbilityRaw.toLowerCase() !== "no",
+    };
+  });
+}
+
+function parseWeaponEntries(text, finalAbilities, proficiency) {
+  return parseWeaponEntryDefinitions(text).map((weapon) => {
+    const abilityMod = finalAbilities[weapon.abilityKey]?.mod ?? 0;
+    const proficiencyBonus = weapon.proficient ? proficiency : 0;
+    const damageBonus = (weapon.damageAbility ? abilityMod : 0) + weapon.damageMisc;
+    const damageText = `${weapon.damageDie}${damageBonus ? formatSigned(damageBonus) : ""} ${weapon.damageType}`;
+    return {
+      ...weapon,
+      abilityLabel: getAbilityLabel(weapon.abilityKey),
+      abilityMod,
+      proficiencyBonus,
+      attackBonus: abilityMod + proficiencyBonus + weapon.attackMisc,
+      damageBonus,
+      damageText,
+    };
   });
 }
 
