@@ -227,10 +227,17 @@
                 <span>已知 / 準備法術</span>
                 <textarea name="spellbook" rows="5" placeholder="例如：戲法：光亮術、霧觸；1環：護盾術、羽落術"></textarea>
               </label>
-              <label class="full">
-                <span>法術清單</span>
-                <textarea name="spellEntries" rows="6" placeholder="每行一筆：等級|名稱|狀態|備註&#10;例如：2|迷霧步|準備|保留脫離戰場&#10;0|光亮術|常駐|照明"></textarea>
-              </label>
+              <div class="spell-builder full">
+                <div class="spell-builder-head">
+                  <div>
+                    <span class="field-title">法術設定</span>
+                    <p>設定攻擊、豁免與傷害後，可在角卡頁或跑團模式直接擲骰。</p>
+                  </div>
+                  <button type="button" id="addSpellBtn" class="ghost compact-btn">新增法術</button>
+                </div>
+                <div id="spellEditor" class="spell-editor"></div>
+                <textarea name="spellEntries" class="spell-entries-source" aria-hidden="true" tabindex="-1"></textarea>
+              </div>
               <label class="full">
                 <span>施法備註</span>
                 <textarea name="spellNotes" rows="4" placeholder="記錄儀式、專注、法術來源、招式搭配"></textarea>

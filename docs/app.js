@@ -166,6 +166,8 @@ const dynamicFields = document.getElementById("dynamicFields");
 const abilityInputs = document.getElementById("abilityInputs");
 const skillInputs = document.getElementById("skillInputs");
 const spellManager = document.getElementById("spellManager");
+const spellEditor = document.getElementById("spellEditor");
+const addSpellBtn = document.getElementById("addSpellBtn");
 const weaponEditor = document.getElementById("weaponEditor");
 const addWeaponBtn = document.getElementById("addWeaponBtn");
 const sheetView = document.getElementById("sheetView");
@@ -184,9 +186,12 @@ document.getElementById("importBtn").addEventListener("click", () => importFileI
 document.getElementById("exportBtn").addEventListener("click", exportJson);
 document.getElementById("resetBtn").addEventListener("click", resetForm);
 document.getElementById("printBtn").addEventListener("click", () => window.print());
+addSpellBtn.addEventListener("click", addSpellEntry);
 addWeaponBtn.addEventListener("click", addWeaponEntry);
 importFileInput.addEventListener("change", importJson);
 form.addEventListener("input", updateAll);
+spellEditor.addEventListener("input", syncSpellEntriesFromEditor);
+spellEditor.addEventListener("click", handleSpellEditorActions);
 weaponEditor.addEventListener("input", syncWeaponEntriesFromEditor);
 weaponEditor.addEventListener("click", handleWeaponEditorActions);
 sheetView.addEventListener("click", handleSheetActions);
@@ -214,7 +219,7 @@ function init() {
   applyClassSavingThrows();
   const saved = loadState();
   if (saved) populateForm(saved);
-  else buildWeaponEditor();
+  else { buildSpellEditor(); buildWeaponEditor(); }
   updateAll();
 }
 
@@ -238,6 +243,72 @@ function applyClassSavingThrows() {
 
 function buildSkillInputs() {
   skillInputs.innerHTML = skillDefinitions.map((skill) => `<div class="skill-card"><div class="skill-head"><div><h4>${skill.label}</h4><p>${getAbilityLabel(skill.ability)} 技能</p></div><div class="skill-value" id="skillPreview_${skill.key}">+0</div></div><label><span>熟練狀態</span><select name="skill_${skill.key}_mode"><option value="none">未熟練</option><option value="proficient">熟練</option><option value="expertise">專精</option></select></label><label><span>額外修正</span><input type="number" name="skill_${skill.key}_misc" value="0"></label></div>`).join("");
+}
+
+function buildSpellEditor() {
+  const entries = parseSpellEntryDefinitions(form.elements.spellEntries.value);
+  spellEditor.innerHTML = entries.length ? entries.map(renderSpellEditorCard).join("") : `<div class="spell-editor-empty"><strong>還沒有法術</strong><span>按「新增法術」建立可擲骰的法術卡。</span></div>`;
+}
+
+function renderSpellEditorCard(spell, index) {
+  const levelOptions = Array.from({ length: 10 }, (_, level) => `<option value="${level}" ${spell.level === level ? "selected" : ""}>${level === 0 ? "戲法" : `${level} 環`}</option>`).join("");
+  const abilityOptions = abilities.map((ability) => `<option value="${ability.key}" ${spell.saveAbility === ability.key ? "selected" : ""}>${ability.label}</option>`).join("");
+  const damageTypes = ["鈍擊", "穿刺", "揮砍", "火焰", "寒冷", "雷電", "毒素", "光耀", "黯蝕", "心靈", "力場", "治療"];
+  const damageTypeOptions = damageTypes.map((type) => `<option value="${type}" ${spell.damageType === type ? "selected" : ""}>${type}</option>`).join("");
+  const statuses = ["準備", "常駐", "已用"];
+  const customStatusOption = statuses.includes(spell.status) ? "" : `<option value="${escapeHtml(spell.status)}" selected>${escapeHtml(spell.status)}</option>`;
+  return `<article class="spell-editor-card" data-spell-index="${index}">
+    <div class="spell-editor-card-head"><strong>法術 ${index + 1}</strong><button type="button" class="text-btn danger-text" data-spell-editor-action="remove">移除</button></div>
+    <div class="spell-editor-grid">
+      <label class="spell-field-name"><span>名稱</span><input type="text" data-spell-field="name" value="${escapeHtml(spell.name)}" placeholder="例如：火焰箭"></label>
+      <label><span>環階</span><select data-spell-field="level">${levelOptions}</select></label>
+      <label><span>狀態</span><select data-spell-field="status"><option value="準備" ${spell.status === "準備" ? "selected" : ""}>準備</option><option value="常駐" ${spell.status === "常駐" ? "selected" : ""}>常駐</option><option value="已用" ${spell.status === "已用" ? "selected" : ""}>已用</option>${customStatusOption}</select></label>
+      <label><span>施放判定</span><select data-spell-field="method"><option value="attack" ${spell.method === "attack" ? "selected" : ""}>法術攻擊</option><option value="save" ${spell.method === "save" ? "selected" : ""}>目標豁免</option><option value="auto" ${spell.method === "auto" ? "selected" : ""}>自動命中 / 治療</option><option value="utility" ${spell.method === "utility" ? "selected" : ""}>功能型</option></select></label>
+      <label><span>豁免屬性</span><select data-spell-field="saveAbility">${abilityOptions}</select></label>
+      <label><span>豁免成功效果</span><select data-spell-field="saveEffect"><option value="half" ${spell.saveEffect === "half" ? "selected" : ""}>傷害減半</option><option value="none" ${spell.saveEffect === "none" ? "selected" : ""}>免疫傷害</option><option value="special" ${spell.saveEffect === "special" ? "selected" : ""}>依描述處理</option></select></label>
+      <label><span>豁免 DC 額外加值</span><input type="number" data-spell-field="saveDcMisc" value="${spell.saveDcMisc}"></label>
+      <label><span>攻擊固定加值</span><input type="number" data-spell-field="attackMisc" value="${spell.attackMisc}"></label>
+      <label><span>攻擊額外骰</span><input type="text" data-spell-field="attackBonusDice" value="${escapeHtml(spell.attackBonusDice)}" placeholder="例如：1d4"></label>
+      <label><span>基礎傷害骰</span><input type="text" data-spell-field="damageDie" value="${escapeHtml(spell.damageDie)}" placeholder="例如：3d6"></label>
+      <label><span>傷害額外骰</span><input type="text" data-spell-field="damageBonusDice" value="${escapeHtml(spell.damageBonusDice)}" placeholder="例如：1d6+1d4"></label>
+      <label><span>傷害固定加值</span><input type="number" data-spell-field="damageMisc" value="${spell.damageMisc}"></label>
+      <label><span>加入施法屬性</span><select data-spell-field="damageAbility"><option value="yes" ${spell.damageAbility ? "selected" : ""}>加入</option><option value="no" ${spell.damageAbility ? "" : "selected"}>不加入</option></select></label>
+      <label><span>傷害類型</span><select data-spell-field="damageType">${damageTypeOptions}${damageTypes.includes(spell.damageType) ? "" : `<option value="${escapeHtml(spell.damageType)}" selected>${escapeHtml(spell.damageType)}</option>`}</select></label>
+      <label><span>每升一環額外骰</span><input type="text" data-spell-field="upcastDice" value="${escapeHtml(spell.upcastDice)}" placeholder="例如：1d6"></label>
+      <label class="spell-field-note"><span>射程 / 範圍 / 描述</span><input type="text" data-spell-field="note" value="${escapeHtml(spell.note)}" placeholder="例如：60 尺；20 尺球形；需專注"></label>
+    </div>
+  </article>`;
+}
+
+function addSpellEntry() {
+  syncSpellEntriesFromEditor();
+  const entries = parseSpellEntryDefinitions(form.elements.spellEntries.value);
+  entries.push({ level: 0, name: "新法術", status: "準備", note: "", method: "attack", saveAbility: "dex", saveEffect: "half", damageDie: "1d8", damageType: "力場", damageMisc: 0, damageBonusDice: "", damageAbility: false, attackMisc: 0, attackBonusDice: "", upcastDice: "", saveDcMisc: 0 });
+  form.elements.spellEntries.value = serializeSpellEntries(entries);
+  buildSpellEditor();
+  updateAll();
+  spellEditor.querySelector(".spell-editor-card:last-child input")?.focus();
+}
+
+function handleSpellEditorActions(event) {
+  const button = event.target.closest("[data-spell-editor-action]");
+  if (!button) return;
+  button.closest(".spell-editor-card")?.remove();
+  syncSpellEntriesFromEditor();
+  buildSpellEditor();
+  updateAll();
+}
+
+function syncSpellEntriesFromEditor() {
+  const entries = Array.from(spellEditor.querySelectorAll(".spell-editor-card")).map((card) => {
+    const value = (field) => card.querySelector(`[data-spell-field="${field}"]`)?.value ?? "";
+    return { level: toNumber(value("level"), 0), name: value("name") || "未命名法術", status: value("status") || "準備", note: value("note"), method: value("method") || "utility", saveAbility: value("saveAbility") || "dex", saveEffect: value("saveEffect") || "half", damageDie: value("damageDie"), damageType: value("damageType") || "力場", damageMisc: toNumber(value("damageMisc"), 0), damageBonusDice: value("damageBonusDice"), damageAbility: value("damageAbility") === "yes", attackMisc: toNumber(value("attackMisc"), 0), attackBonusDice: value("attackBonusDice"), upcastDice: value("upcastDice"), saveDcMisc: toNumber(value("saveDcMisc"), 0) };
+  });
+  form.elements.spellEntries.value = serializeSpellEntries(entries);
+}
+
+function serializeSpellEntries(entries) {
+  return entries.map((spell) => [spell.level, spell.name, spell.status, spell.note, spell.method, spell.saveAbility, spell.saveEffect, spell.damageDie, spell.damageType, spell.damageMisc, spell.damageBonusDice, spell.damageAbility ? "yes" : "no", spell.attackMisc, spell.attackBonusDice, spell.upcastDice, spell.saveDcMisc].map(sanitizeWeaponField).join("|")).join("\n");
 }
 
 function buildWeaponEditor() {
@@ -364,6 +435,7 @@ function populateForm(data) {
   rebuildDynamicFields();
   rebuildSpellManager();
   Object.entries(data).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value ?? ""; });
+  buildSpellEditor();
   buildWeaponEditor();
 }
 
@@ -430,7 +502,7 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
   const armorClass = state.acOverride ?? getEstimatedArmorClass(state, finalAbilities);
   const carryCapacity = getCarryCapacity(state, finalAbilities);
   const spellSummary = getSpellSummary(state, classData, finalAbilities, proficiency);
-  const parsedSpells = parseSpellEntries(state.spellEntries);
+  const parsedSpells = parseSpellEntries(state.spellEntries, classData, finalAbilities, proficiency);
   const parsedWeapons = parseWeaponEntries(state.weaponEntries, finalAbilities, proficiency);
   const weaponProficiencies = mergeProficiencies(classData.weaponProficiencies, state.additionalWeaponProficiencies);
   const languageProficiencies = mergeProficiencies(raceData.languages, state.additionalLanguages);
@@ -498,7 +570,11 @@ function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
     ]), "section-subclass")}
     ${section("施法摘要", featureGrid([featureBox("施法資料", spellSummary.lines, "feature-box-magic"), featureBox("法術與資源備註", spellSummary.notes, "feature-box-magic")]), "section-magic")}
     ${sessionQuickSection}
-    ${section("法術清單", featureGrid([featureBox("結構化法術", parsedSpells.length ? parsedSpells.map((spell) => `${spell.levelLabel}｜${spell.name}｜${spell.status}${spell.note ? `｜${spell.note}` : ""}`) : ["尚未填寫結構化法術清單。"], "feature-box-magic"), featureBox("資源上限", getResourceCapLines(resourceCaps), "feature-box-magic")]), "section-spells")}
+    ${section("法術與傷害", `<div class="spell-combat-layout">
+      ${renderDiceTray()}
+      ${spellActionDeck(parsedSpells)}
+      ${featureBox("資源上限", getResourceCapLines(resourceCaps), "feature-box-magic")}
+    </div>`, "section-spells")}
     ${section("武器與擲骰", `<div class="weapon-combat-layout">
       ${renderDiceTray()}
       ${weaponActionDeck(parsedWeapons)}
@@ -567,6 +643,22 @@ function renderQuickResources(resources) {
     </div>
   </div>`).join("") : `<div class="quick-spend-card empty-card"><h4>職業資源</h4><p>目前沒有可快速點按的職業資源。</p></div>`;
 }
+function spellActionDeck(spells) {
+  if (!spells.length) return `<article class="feature-box feature-box-magic empty-card"><h4>法術動作</h4><div class="empty">尚未設定法術卡。</div></article>`;
+  return `<div class="spell-action-deck">${spells.map((spell, index) => {
+    const methodText = spell.method === "attack" ? `攻擊 ${formatSigned(spell.attackBonus)}${spell.attackBonusDice ? ` + ${spell.attackBonusDice}` : ""}` : spell.method === "save" ? `${getAbilityLabel(spell.saveAbility)}豁免 DC ${spell.saveDc}` : spell.method === "auto" ? "自動命中 / 治療" : "功能型";
+    const damageText = spell.damageDie ? spell.damageText : "無傷害擲骰";
+    const attackButtons = spell.method === "attack" ? `<button type="button" class="weapon-roll-btn is-primary" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="normal">攻擊</button><button type="button" class="weapon-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="advantage">優勢</button><button type="button" class="weapon-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="disadvantage">劣勢</button>` : "";
+    const damageButtons = spell.damageDie ? `<button type="button" class="weapon-roll-btn is-damage" data-action="roll-spell-damage" data-spell-index="${index}">傷害</button>${spell.method === "attack" ? `<button type="button" class="weapon-roll-btn is-critical" data-action="roll-spell-critical" data-spell-index="${index}">重擊</button>` : ""}${spell.upcastDice ? `<button type="button" class="weapon-roll-btn is-upcast" data-action="roll-spell-upcast" data-spell-index="${index}">升環 +1</button>` : ""}` : "";
+    return `<article class="spell-action-card">
+      <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(spell.name)}</span><span class="spell-level-badge">${spell.levelLabel}</span></div>
+      <div class="spell-action-stats"><span>${escapeHtml(methodText)}</span><strong>${escapeHtml(damageText)}</strong><span>${escapeHtml(spell.status)}</span></div>
+      ${spell.method === "save" ? `<span class="spell-save-note">成功：${escapeHtml(getSaveEffectLabel(spell.saveEffect))}</span>` : ""}
+      <span class="weapon-action-note">${escapeHtml(spell.note || "尚未填寫法術描述")}</span>
+      ${attackButtons || damageButtons ? `<div class="spell-roll-actions print-hide">${attackButtons}${damageButtons}</div>` : ""}
+    </article>`;
+  }).join("")}</div>`;
+}
 function weaponActionDeck(weapons) {
   if (!weapons.length) return `<article class="feature-box feature-box-gear empty-card"><h4>武器動作</h4><div class="empty">尚未填寫結構化武器卡。</div></article>`;
   return `<div class="weapon-action-deck">${weapons.map((weapon, index) => `<article class="weapon-action-card">
@@ -584,7 +676,7 @@ function weaponActionDeck(weapons) {
 }
 
 function renderDiceTray() {
-  if (!diceRollHistory.length) return `<aside class="dice-tray print-hide"><div class="dice-tray-empty"><strong>擲骰紀錄</strong><span>點擊武器上的攻擊或傷害按鈕，結果會顯示在這裡。</span></div></aside>`;
+  if (!diceRollHistory.length) return `<aside class="dice-tray print-hide"><div class="dice-tray-empty"><strong>擲骰紀錄</strong><span>點擊法術或武器的擲骰按鈕，結果會顯示在這裡。</span></div></aside>`;
   const [latest, ...previous] = diceRollHistory;
   return `<aside class="dice-tray print-hide ${latest.tone ? `tone-${latest.tone}` : ""}">
     <div class="dice-tray-head"><span>最新擲骰</span><button type="button" class="text-btn" data-action="clear-dice-history">清除</button></div>
@@ -769,10 +861,55 @@ function handleSheetActions(event) {
     rollWeaponDamage(toNumber(button.dataset.weaponIndex, -1), false);
   } else if (action === "roll-weapon-critical") {
     rollWeaponDamage(toNumber(button.dataset.weaponIndex, -1), true);
+  } else if (action === "roll-spell-attack") {
+    rollSpellAttack(toNumber(button.dataset.spellIndex, -1), button.dataset.rollMode || "normal");
+  } else if (action === "roll-spell-damage") {
+    rollSpellDamage(toNumber(button.dataset.spellIndex, -1), false, false);
+  } else if (action === "roll-spell-critical") {
+    rollSpellDamage(toNumber(button.dataset.spellIndex, -1), true, false);
+  } else if (action === "roll-spell-upcast") {
+    rollSpellDamage(toNumber(button.dataset.spellIndex, -1), false, true);
   } else if (action === "clear-dice-history") {
     diceRollHistory.length = 0;
     updateAll();
   }
+}
+
+function getCurrentSpells() {
+  const state = getState();
+  const finalAbilities = getFinalAbilities(state);
+  return parseSpellEntries(state.spellEntries, classes[state.class], finalAbilities, getProficiencyBonus(state.level));
+}
+
+function rollSpellAttack(index, mode) {
+  const spell = getCurrentSpells()[index];
+  if (!spell) return;
+  const rolls = mode === "normal" ? [rollDie(20)] : [rollDie(20), rollDie(20)];
+  const natural = mode === "advantage" ? Math.max(...rolls) : mode === "disadvantage" ? Math.min(...rolls) : rolls[0];
+  const extraDice = spell.attackBonusDice ? rollDiceExpression(spell.attackBonusDice) : null;
+  const total = natural + spell.attackBonus + (extraDice?.total || 0);
+  const outcome = natural === 20 ? "重擊！可點法術的「重擊」擲雙倍傷害骰。" : natural === 1 ? "大失敗" : "";
+  const tone = natural === 20 ? "critical" : natural === 1 ? "fumble" : "attack";
+  const modeLabel = mode === "advantage" ? "優勢" : mode === "disadvantage" ? "劣勢" : "法術攻擊";
+  recordDiceRoll({ title: `${spell.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(spell.attackBonus)}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}`, outcome, tone }, ".section-spells");
+}
+
+function rollSpellDamage(index, isCritical, isUpcast) {
+  const spell = getCurrentSpells()[index];
+  if (!spell?.damageDie) return;
+  const multiplier = isCritical ? 2 : 1;
+  const baseDice = rollDiceExpression(spell.damageDie, multiplier);
+  const bonusDice = spell.damageBonusDice ? rollDiceExpression(spell.damageBonusDice, multiplier) : null;
+  const upcastDice = isUpcast && spell.upcastDice ? rollDiceExpression(spell.upcastDice, multiplier) : null;
+  const total = baseDice.total + (bonusDice?.total || 0) + (upcastDice?.total || 0) + spell.damageBonus;
+  const saveNote = spell.method === "save" ? `；${getAbilityLabel(spell.saveAbility)}豁免 DC ${spell.saveDc}，成功${getSaveEffectLabel(spell.saveEffect)}` : "";
+  recordDiceRoll({
+    title: `${spell.name} · ${isCritical ? "重擊傷害" : isUpcast ? "升環傷害" : spell.damageType === "治療" ? "治療" : "傷害"}`,
+    total,
+    detail: `${baseDice.detail}${bonusDice ? ` + 額外 ${bonusDice.detail}` : ""}${upcastDice ? ` + 升環 ${upcastDice.detail}` : ""}${spell.damageBonus ? ` ${formatSigned(spell.damageBonus)}` : ""} ${spell.damageType}`,
+    outcome: `${isCritical ? "已加倍法術傷害骰。" : ""}${saveNote}`.replace(/^；/, ""),
+    tone: isCritical ? "critical" : spell.damageType === "治療" ? "attack" : "damage",
+  }, ".section-spells");
 }
 
 function getCurrentWeapons() {
@@ -790,7 +927,7 @@ function rollWeaponAttack(index, mode) {
   const total = natural + weapon.attackBonus + (extraDice?.total || 0);
   const outcome = natural >= weapon.critRange ? "重擊！可直接點武器的「重擊」擲傷害。" : natural === 1 ? "大失敗" : "";
   const tone = natural >= weapon.critRange ? "critical" : natural === 1 ? "fumble" : "attack";
-  recordDiceRoll({ title: `${weapon.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(weapon.attackBonus)}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}`, outcome, tone });
+  recordDiceRoll({ title: `${weapon.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(weapon.attackBonus)}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}`, outcome, tone }, ".section-weapons");
 }
 
 function rollWeaponDamage(index, isCritical) {
@@ -805,7 +942,7 @@ function rollWeaponDamage(index, isCritical) {
     detail: `${result.detail}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}${weapon.damageBonus ? ` ${formatSigned(weapon.damageBonus)}` : ""} ${weapon.damageType}`,
     outcome: isCritical ? "已加倍所有武器傷害骰，屬性與固定加值不加倍。" : "",
     tone: isCritical ? "critical" : "damage",
-  });
+  }, ".section-weapons");
 }
 
 function rollDiceExpression(expression, multiplier = 1) {
@@ -834,11 +971,12 @@ function rollDiceExpression(expression, multiplier = 1) {
 
 function rollDie(sides) { return Math.floor(Math.random() * sides) + 1; }
 
-function recordDiceRoll(result) {
+function recordDiceRoll(result, sectionSelector) {
   diceRollHistory.unshift(result);
   diceRollHistory.splice(8);
   updateAll();
-  document.querySelector(".dice-tray")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const tray = sectionSelector ? document.querySelector(`${sectionSelector} .dice-tray`) : document.querySelector(".dice-tray");
+  tray?.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function adjustFieldNumber(fieldName, delta) {
@@ -900,7 +1038,7 @@ function adjustQuickResource(resourceLabel, delta) {
 }
 
 function syncCurrentHpToEstimate() { form.elements.currentHp.value = getEstimatedMaxHp(getState(), classes[getState().class], getFinalAbilities(getState())); }
-function resetForm() { localStorage.removeItem(STORAGE_KEY); diceRollHistory.length = 0; form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); buildWeaponEditor(); updateAll(); }
+function resetForm() { localStorage.removeItem(STORAGE_KEY); diceRollHistory.length = 0; form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); buildSpellEditor(); buildWeaponEditor(); updateAll(); }
 function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
 
@@ -959,12 +1097,21 @@ function getResourceCapLines(caps) {
   return entries.length ? entries.map(([label, data]) => `${label}：${Math.min(data.current, data.max)} / ${data.max}`) : ["目前沒有已結構化的職業資源上限。"];
 }
 
-function parseSpellEntries(text) {
+function parseSpellEntryDefinitions(text) {
   if (!text) return [];
   return String(text).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
-    const [levelRaw = "", name = "", status = "準備", note = ""] = line.split("|").map((part) => part.trim());
+    const [levelRaw = "", name = "", status = "準備", note = "", method = "utility", saveAbility = "dex", saveEffect = "half", damageDie = "", damageType = "力場", damageMiscRaw = "0", damageBonusDice = "", damageAbilityRaw = "no", attackMiscRaw = "0", attackBonusDice = "", upcastDice = "", saveDcMiscRaw = "0"] = line.split("|").map((part) => part.trim());
     const level = levelRaw === "戲法" ? 0 : toNumber(levelRaw, 0);
-    return { level, levelLabel: level === 0 ? "戲法" : `${level} 環`, name: name || "未命名法術", status: status || "準備", note };
+    return { level: Math.max(0, Math.min(9, level)), name: name || "未命名法術", status: status || "準備", note, method: ["attack", "save", "auto", "utility"].includes(method) ? method : "utility", saveAbility: abilities.some((ability) => ability.key === saveAbility) ? saveAbility : "dex", saveEffect: ["half", "none", "special"].includes(saveEffect) ? saveEffect : "half", damageDie, damageType: damageType || "力場", damageMisc: toNumber(damageMiscRaw, 0), damageBonusDice, damageAbility: damageAbilityRaw === "yes", attackMisc: toNumber(attackMiscRaw, 0), attackBonusDice, upcastDice, saveDcMisc: toNumber(saveDcMiscRaw, 0) };
+  });
+}
+
+function parseSpellEntries(text, classData, finalAbilities, proficiency = 0) {
+  const castingAbility = classData?.spellcasting?.ability || "int";
+  const castingMod = finalAbilities?.[castingAbility]?.mod ?? 0;
+  return parseSpellEntryDefinitions(text).map((spell) => {
+    const damageBonus = (spell.damageAbility ? castingMod : 0) + spell.damageMisc;
+    return { ...spell, levelLabel: spell.level === 0 ? "戲法" : `${spell.level} 環`, attackBonus: castingMod + proficiency + spell.attackMisc, saveDc: 8 + castingMod + proficiency + spell.saveDcMisc, damageBonus, damageText: `${spell.damageDie}${spell.damageBonusDice ? ` + ${spell.damageBonusDice}` : ""}${damageBonus ? ` ${formatSigned(damageBonus)}` : ""} ${spell.damageType}` };
   }).sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, "zh-Hant"));
 }
 
@@ -1026,6 +1173,7 @@ function getPlayTips(state, classData, raceData) {
 function getStartingGloom(raceName) { return { "盧明人": 1, "普萊默斯人": 3, "艾維尼安人": 1, "東德雷塞爾人": 4, "西德雷塞爾人": 1 }[raceName] ?? "依團規"; }
 function getArmorLabel(key) { return armorTypes.find((item) => item.key === key)?.label || "未裝備"; }
 function getAbilityLabel(key) { return abilities.find((item) => item.key === key)?.label || "未知"; }
+function getSaveEffectLabel(effect) { return ({ half: "傷害減半", none: "免疫傷害", special: "依描述處理" })[effect] || "依描述處理"; }
 function getAbilityKeyByLabel(label) { return abilities.find((item) => item.label === label)?.key || null; }
 function getModifier(score) { return Math.floor((score - 10) / 2); }
 function getProficiencyBonus(level) { return Math.floor((Math.max(1, toNumber(level, 1)) - 1) / 4) + 2; }
