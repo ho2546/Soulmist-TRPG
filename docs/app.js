@@ -255,10 +255,12 @@ function renderWeaponEditorCard(weapon, index) {
       <label class="weapon-field-name"><span>名稱</span><input type="text" data-weapon-field="name" value="${escapeHtml(weapon.name)}" placeholder="例如：長劍"></label>
       <label><span>攻擊屬性</span><select data-weapon-field="abilityKey">${abilityOptions}</select></label>
       <label><span>熟練</span><select data-weapon-field="proficient"><option value="yes" ${weapon.proficient ? "selected" : ""}>熟練</option><option value="no" ${weapon.proficient ? "" : "selected"}>未熟練</option></select></label>
-      <label><span>攻擊額外加值</span><input type="number" data-weapon-field="attackMisc" value="${weapon.attackMisc}"></label>
+      <label><span>攻擊固定加值</span><input type="number" data-weapon-field="attackMisc" value="${weapon.attackMisc}"></label>
+      <label><span>攻擊額外骰</span><input type="text" data-weapon-field="attackBonusDice" value="${escapeHtml(weapon.attackBonusDice)}" placeholder="例如：1d4"></label>
       <label><span>傷害骰</span><input type="text" data-weapon-field="damageDie" value="${escapeHtml(weapon.damageDie)}" placeholder="例如：1d8 或 2d6+1"></label>
       <label><span>傷害加入屬性</span><select data-weapon-field="damageAbility"><option value="yes" ${weapon.damageAbility ? "selected" : ""}>加入</option><option value="no" ${weapon.damageAbility ? "" : "selected"}>不加入</option></select></label>
-      <label><span>傷害額外加值</span><input type="number" data-weapon-field="damageMisc" value="${weapon.damageMisc}"></label>
+      <label><span>傷害固定加值</span><input type="number" data-weapon-field="damageMisc" value="${weapon.damageMisc}"></label>
+      <label><span>傷害額外骰</span><input type="text" data-weapon-field="damageBonusDice" value="${escapeHtml(weapon.damageBonusDice)}" placeholder="例如：1d6 或 1d4+1d6"></label>
       <label><span>傷害類型</span><select data-weapon-field="damageType">${damageTypeOptions}${damageTypes.includes(weapon.damageType) ? "" : `<option value="${escapeHtml(weapon.damageType)}" selected>${escapeHtml(weapon.damageType)}</option>`}</select></label>
       <label><span>重擊範圍</span><input type="number" data-weapon-field="critRange" min="2" max="20" value="${weapon.critRange}"></label>
       <label class="weapon-field-note"><span>描述 / 射程 / 特性</span><input type="text" data-weapon-field="note" value="${escapeHtml(weapon.note)}" placeholder="例如：60 尺、可投擲、輕型"></label>
@@ -269,7 +271,7 @@ function renderWeaponEditorCard(weapon, index) {
 function addWeaponEntry() {
   syncWeaponEntriesFromEditor();
   const entries = parseWeaponEntryDefinitions(form.elements.weaponEntries.value);
-  entries.push({ name: "新武器", abilityKey: "str", proficient: true, damageDie: "1d6", damageType: "鈍擊", note: "", attackMisc: 0, damageMisc: 0, critRange: 20, damageAbility: true });
+  entries.push({ name: "新武器", abilityKey: "str", proficient: true, damageDie: "1d6", damageType: "鈍擊", note: "", attackMisc: 0, damageMisc: 0, critRange: 20, damageAbility: true, attackBonusDice: "", damageBonusDice: "" });
   form.elements.weaponEntries.value = serializeWeaponEntries(entries);
   buildWeaponEditor();
   updateAll();
@@ -296,7 +298,9 @@ function syncWeaponEntriesFromEditor() {
       damageType: value("damageType") || "鈍擊",
       note: value("note"),
       attackMisc: toNumber(value("attackMisc"), 0),
+      attackBonusDice: value("attackBonusDice"),
       damageMisc: toNumber(value("damageMisc"), 0),
+      damageBonusDice: value("damageBonusDice"),
       critRange: Math.max(2, Math.min(20, toNumber(value("critRange"), 20))),
       damageAbility: value("damageAbility") !== "no",
     };
@@ -305,7 +309,7 @@ function syncWeaponEntriesFromEditor() {
 }
 
 function serializeWeaponEntries(entries) {
-  return entries.map((weapon) => [weapon.name, weapon.abilityKey, weapon.proficient ? "yes" : "no", weapon.damageDie, weapon.damageType, weapon.note, weapon.attackMisc, weapon.damageMisc, weapon.critRange, weapon.damageAbility ? "yes" : "no"].map(sanitizeWeaponField).join("|")).join("\n");
+  return entries.map((weapon) => [weapon.name, weapon.abilityKey, weapon.proficient ? "yes" : "no", weapon.damageDie, weapon.damageType, weapon.note, weapon.attackMisc, weapon.damageMisc, weapon.critRange, weapon.damageAbility ? "yes" : "no", weapon.attackBonusDice, weapon.damageBonusDice].map(sanitizeWeaponField).join("|")).join("\n");
 }
 
 function sanitizeWeaponField(value) { return String(value ?? "").replace(/[|\r\n]+/g, " / ").trim(); }
@@ -567,7 +571,7 @@ function weaponActionDeck(weapons) {
   if (!weapons.length) return `<article class="feature-box feature-box-gear empty-card"><h4>武器動作</h4><div class="empty">尚未填寫結構化武器卡。</div></article>`;
   return `<div class="weapon-action-deck">${weapons.map((weapon, index) => `<article class="weapon-action-card">
     <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(weapon.name)}</span><span class="weapon-action-type">${escapeHtml(weapon.damageType)}</span></div>
-    <div class="weapon-action-stats"><span class="weapon-action-attack">攻擊 ${formatSigned(weapon.attackBonus)}</span><strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong><span>重擊 ${weapon.critRange}–20</span></div>
+    <div class="weapon-action-stats"><span class="weapon-action-attack">攻擊 ${formatSigned(weapon.attackBonus)}${weapon.attackBonusDice ? ` + ${escapeHtml(weapon.attackBonusDice)}` : ""}</span><strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong><span>重擊 ${weapon.critRange}–20</span></div>
     <span class="weapon-action-note">${escapeHtml(weapon.note || "標準攻擊動作")}</span>
     <div class="weapon-roll-actions print-hide">
       <button type="button" class="weapon-roll-btn is-primary" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="normal">攻擊</button>
@@ -781,22 +785,24 @@ function rollWeaponAttack(index, mode) {
   if (!weapon) return;
   const rolls = mode === "normal" ? [rollDie(20)] : [rollDie(20), rollDie(20)];
   const natural = mode === "advantage" ? Math.max(...rolls) : mode === "disadvantage" ? Math.min(...rolls) : rolls[0];
+  const extraDice = weapon.attackBonusDice ? rollDiceExpression(weapon.attackBonusDice) : null;
   const modeLabel = mode === "advantage" ? "優勢" : mode === "disadvantage" ? "劣勢" : "攻擊";
-  const total = natural + weapon.attackBonus;
+  const total = natural + weapon.attackBonus + (extraDice?.total || 0);
   const outcome = natural >= weapon.critRange ? "重擊！可直接點武器的「重擊」擲傷害。" : natural === 1 ? "大失敗" : "";
   const tone = natural >= weapon.critRange ? "critical" : natural === 1 ? "fumble" : "attack";
-  recordDiceRoll({ title: `${weapon.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(weapon.attackBonus)}`, outcome, tone });
+  recordDiceRoll({ title: `${weapon.name} · ${modeLabel}`, total, detail: `d20 [${rolls.join(", ")}] ${formatSigned(weapon.attackBonus)}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}`, outcome, tone });
 }
 
 function rollWeaponDamage(index, isCritical) {
   const weapon = getCurrentWeapons()[index];
   if (!weapon) return;
   const result = rollDiceExpression(weapon.damageDie, isCritical ? 2 : 1);
-  const total = result.total + weapon.damageBonus;
+  const extraDice = weapon.damageBonusDice ? rollDiceExpression(weapon.damageBonusDice, isCritical ? 2 : 1) : null;
+  const total = result.total + weapon.damageBonus + (extraDice?.total || 0);
   recordDiceRoll({
     title: `${weapon.name} · ${isCritical ? "重擊傷害" : "傷害"}`,
     total,
-    detail: `${result.detail}${weapon.damageBonus ? ` ${formatSigned(weapon.damageBonus)}` : ""} ${weapon.damageType}`,
+    detail: `${result.detail}${extraDice ? ` + 額外 ${extraDice.detail}` : ""}${weapon.damageBonus ? ` ${formatSigned(weapon.damageBonus)}` : ""} ${weapon.damageType}`,
     outcome: isCritical ? "已加倍所有武器傷害骰，屬性與固定加值不加倍。" : "",
     tone: isCritical ? "critical" : "damage",
   });
@@ -965,7 +971,7 @@ function parseSpellEntries(text) {
 function parseWeaponEntryDefinitions(text) {
   if (!text) return [];
   return String(text).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((line) => {
-    const [name = "", abilityKeyRaw = "str", proficientRaw = "yes", damageDie = "1d6", damageType = "鈍擊", note = "", attackMiscRaw = "0", damageMiscRaw = "0", critRangeRaw = "20", damageAbilityRaw = "yes"] = line.split("|").map((part) => part.trim());
+    const [name = "", abilityKeyRaw = "str", proficientRaw = "yes", damageDie = "1d6", damageType = "鈍擊", note = "", attackMiscRaw = "0", damageMiscRaw = "0", critRangeRaw = "20", damageAbilityRaw = "yes", attackBonusDice = "", damageBonusDice = ""] = line.split("|").map((part) => part.trim());
     const abilityKey = ["str", "dex", "con", "int", "wis", "cha"].includes(abilityKeyRaw) ? abilityKeyRaw : "str";
     return {
       name: name || "未命名武器",
@@ -975,7 +981,9 @@ function parseWeaponEntryDefinitions(text) {
       damageType: damageType || "鈍擊",
       note,
       attackMisc: toNumber(attackMiscRaw, 0),
+      attackBonusDice,
       damageMisc: toNumber(damageMiscRaw, 0),
+      damageBonusDice,
       critRange: Math.max(2, Math.min(20, toNumber(critRangeRaw, 20))),
       damageAbility: damageAbilityRaw.toLowerCase() !== "no",
     };
@@ -987,7 +995,7 @@ function parseWeaponEntries(text, finalAbilities, proficiency) {
     const abilityMod = finalAbilities[weapon.abilityKey]?.mod ?? 0;
     const proficiencyBonus = weapon.proficient ? proficiency : 0;
     const damageBonus = (weapon.damageAbility ? abilityMod : 0) + weapon.damageMisc;
-    const damageText = `${weapon.damageDie}${damageBonus ? formatSigned(damageBonus) : ""} ${weapon.damageType}`;
+    const damageText = `${weapon.damageDie}${weapon.damageBonusDice ? ` + ${weapon.damageBonusDice}` : ""}${damageBonus ? ` ${formatSigned(damageBonus)}` : ""} ${weapon.damageType}`;
     return {
       ...weapon,
       abilityLabel: getAbilityLabel(weapon.abilityKey),
