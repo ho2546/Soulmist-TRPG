@@ -789,8 +789,8 @@ function spellActionDeck(spells) {
   return `<div class="spell-action-deck">${spells.map((spell, index) => {
     const methodText = spell.method === "attack" ? `命中檢定 d20 ${formatSigned(spell.attackBonus)}${spell.attackBonusDice ? ` + ${spell.attackBonusDice}` : ""}` : spell.method === "save" ? `${getAbilityLabel(spell.saveAbility)}豁免 DC ${spell.saveDc}` : spell.method === "auto" ? "自動命中 / 治療" : "功能型";
     const damageText = spell.damageDie ? spell.damageText : "無傷害擲骰";
-    const attackButtons = spell.method === "attack" ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-primary" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="normal"><span>命中檢定</span><small>d20 ${formatSigned(spell.attackBonus)}</small></button><button type="button" class="weapon-roll-btn spell-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="advantage"><span>優勢命中</span><small>2d20 取高</small></button><button type="button" class="weapon-roll-btn spell-roll-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="disadvantage"><span>劣勢命中</span><small>2d20 取低</small></button>` : "";
-    const damageButtons = spell.damageDie ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-damage" data-action="roll-spell-damage" data-spell-index="${index}"><span>${spell.damageType === "治療" ? "治療擲骰" : "傷害擲骰"}</span><small>${escapeHtml(spell.damageDie)}</small></button>${spell.method === "attack" ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-critical" data-action="roll-spell-critical" data-spell-index="${index}"><span>重擊傷害</span><small>傷害骰 ×2</small></button>` : ""}${spell.upcastDice ? `<button type="button" class="weapon-roll-btn spell-roll-btn is-upcast" data-action="roll-spell-upcast" data-spell-index="${index}"><span>升環 +1</span><small>+${escapeHtml(spell.upcastDice)}</small></button>` : ""}` : "";
+    const attackButtons = spell.method === "attack" ? `<button type="button" class="weapon-roll-btn roll-detail-btn is-primary" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="normal"><span>命中檢定</span><small>d20 ${formatSigned(spell.attackBonus)}</small></button><button type="button" class="weapon-roll-btn roll-detail-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="advantage"><span>優勢命中</span><small>2d20 取高</small></button><button type="button" class="weapon-roll-btn roll-detail-btn" data-action="roll-spell-attack" data-spell-index="${index}" data-roll-mode="disadvantage"><span>劣勢命中</span><small>2d20 取低</small></button>` : "";
+    const damageButtons = spell.damageDie ? `<button type="button" class="weapon-roll-btn roll-detail-btn is-damage" data-action="roll-spell-damage" data-spell-index="${index}"><span>${spell.damageType === "治療" ? "治療擲骰" : "傷害擲骰"}</span><small>${escapeHtml(spell.damageDie)}</small></button>${spell.method === "attack" ? `<button type="button" class="weapon-roll-btn roll-detail-btn is-critical" data-action="roll-spell-critical" data-spell-index="${index}"><span>重擊傷害</span><small>傷害骰 ×2</small></button>` : ""}${spell.upcastDice ? `<button type="button" class="weapon-roll-btn roll-detail-btn is-upcast" data-action="roll-spell-upcast" data-spell-index="${index}"><span>升環 +1</span><small>+${escapeHtml(spell.upcastDice)}</small></button>` : ""}` : "";
     return `<article class="spell-action-card">
       <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(spell.name)}</span><span class="spell-level-badge">${spell.levelLabel}</span></div>
       <div class="spell-action-stats"><span>${escapeHtml(methodText)}</span><strong>${escapeHtml(damageText)}</strong><span>${escapeHtml(spell.status)}</span></div>
@@ -804,14 +804,14 @@ function weaponActionDeck(weapons) {
   if (!weapons.length) return `<article class="feature-box feature-box-gear empty-card"><h4>武器動作</h4><div class="empty">尚未填寫結構化武器卡。</div></article>`;
   return `<div class="weapon-action-deck">${weapons.map((weapon, index) => `<article class="weapon-action-card">
     <div class="weapon-action-head"><span class="weapon-action-name">${escapeHtml(weapon.name)}</span><span class="weapon-action-type">${escapeHtml(weapon.damageType)}</span></div>
-    <div class="weapon-action-stats"><span class="weapon-action-attack">攻擊 ${formatSigned(weapon.attackBonus)}${weapon.attackBonusDice ? ` + ${escapeHtml(weapon.attackBonusDice)}` : ""}</span><strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong><span>重擊 ${weapon.critRange}–20</span></div>
+    <div class="weapon-action-stats"><span class="weapon-action-attack">命中檢定 d20 ${formatSigned(weapon.attackBonus)}${weapon.attackBonusDice ? ` + ${escapeHtml(weapon.attackBonusDice)}` : ""}</span><strong class="weapon-action-damage">${escapeHtml(weapon.damageText)}</strong><span>重擊 ${weapon.critRange}–20</span></div>
     <span class="weapon-action-note">${escapeHtml(weapon.note || "標準攻擊動作")}</span>
     <div class="weapon-roll-actions print-hide">
-      <button type="button" class="weapon-roll-btn is-primary" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="normal">攻擊</button>
-      <button type="button" class="weapon-roll-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="advantage">優勢</button>
-      <button type="button" class="weapon-roll-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="disadvantage">劣勢</button>
-      <button type="button" class="weapon-roll-btn is-damage" data-action="roll-weapon-damage" data-weapon-index="${index}">傷害</button>
-      <button type="button" class="weapon-roll-btn is-critical" data-action="roll-weapon-critical" data-weapon-index="${index}">重擊</button>
+      <button type="button" class="weapon-roll-btn roll-detail-btn is-primary" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="normal"><span>命中檢定</span><small>d20 ${formatSigned(weapon.attackBonus)}</small></button>
+      <button type="button" class="weapon-roll-btn roll-detail-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="advantage"><span>優勢命中</span><small>2d20 取高</small></button>
+      <button type="button" class="weapon-roll-btn roll-detail-btn" data-action="roll-weapon-attack" data-weapon-index="${index}" data-roll-mode="disadvantage"><span>劣勢命中</span><small>2d20 取低</small></button>
+      <button type="button" class="weapon-roll-btn roll-detail-btn is-damage" data-action="roll-weapon-damage" data-weapon-index="${index}"><span>傷害擲骰</span><small>${escapeHtml(weapon.damageDie)}</small></button>
+      <button type="button" class="weapon-roll-btn roll-detail-btn is-critical" data-action="roll-weapon-critical" data-weapon-index="${index}"><span>重擊傷害</span><small>傷害骰 ×2</small></button>
     </div>
   </article>`).join("")}</div>`;
 }
@@ -1089,7 +1089,7 @@ function rollWeaponAttack(index, mode) {
   const rolls = mode === "normal" ? [rollDie(20)] : [rollDie(20), rollDie(20)];
   const natural = mode === "advantage" ? Math.max(...rolls) : mode === "disadvantage" ? Math.min(...rolls) : rolls[0];
   const extraDice = weapon.attackBonusDice ? rollDiceExpression(weapon.attackBonusDice) : null;
-  const modeLabel = mode === "advantage" ? "優勢" : mode === "disadvantage" ? "劣勢" : "攻擊";
+  const modeLabel = mode === "advantage" ? "優勢命中檢定（2d20 取高）" : mode === "disadvantage" ? "劣勢命中檢定（2d20 取低）" : "命中檢定（d20）";
   const total = natural + weapon.attackBonus + (extraDice?.total || 0);
   const outcome = natural >= weapon.critRange ? "重擊！可直接點武器的「重擊」擲傷害。" : natural === 1 ? "大失敗" : "";
   const tone = natural >= weapon.critRange ? "critical" : natural === 1 ? "fumble" : "attack";
