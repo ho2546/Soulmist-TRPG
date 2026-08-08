@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>靈魂迷霧自動角卡</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Soul Mist TRPG</p>
+        <h1>靈魂迷霧自動角卡</h1>
+        <p class="hero-text">
+          這版已支援技能熟練自動計算、結構化法術清單、休息重置、手機跑團模式，以及可列印角卡輸出。
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button type="button" id="loadSampleBtn">載入範例</button>
+        <button type="button" id="applySlotsBtn" class="ghost">套用法術位</button>
+        <button type="button" id="shortRestBtn" class="ghost">短休</button>
+        <button type="button" id="longRestBtn" class="ghost">長休</button>
+        <button type="button" id="importBtn" class="ghost">匯入 JSON</button>
+        <button type="button" id="exportBtn" class="ghost">下載 JSON</button>
+        <button type="button" id="resetBtn" class="ghost">清空資料</button>
+        <button type="button" id="printBtn" class="ghost">列印角卡</button>
+      </div>
+    </header>
+
+    <div class="mobile-switch" aria-label="頁面切換">
+      <button type="button" class="mode-btn is-active" data-mode="builder">填寫頁</button>
+      <button type="button" class="mode-btn" data-mode="sheet">角卡頁</button>
+      <button type="button" class="mode-btn" data-mode="session">跑團模式</button>
+    </div>
+
+    <input type="file" id="importFileInput" accept="application/json" hidden>
+
+    <main class="workspace" data-mobile-mode="builder">
+      <section class="panel builder-panel">
+        <div class="panel-head">
+          <h2>建角設定</h2>
+          <p>這一頁專心填資料與調整規則欄位，切到角卡頁時會顯示純檢視版。</p>
+        </div>
+
+        <form id="characterForm" class="builder-form">
+          <section class="form-section">
+            <h3>基本資料</h3>
+            <div class="form-grid two">
+              <label>
+                <span>角色名稱</span>
+                <input type="text" name="name" placeholder="例如：阿蘭美">
+              </label>
+              <label>
+                <span>玩家名稱</span>
+                <input type="text" name="player" placeholder="玩家名稱">
+              </label>
+              <label>
+                <span>等級</span>
+                <input type="number" name="level" min="1" max="20" value="1">
+              </label>
+              <label>
+                <span>經驗值</span>
+                <input type="number" name="xp" min="0" value="0">
+              </label>
+              <label>
+                <span>種族</span>
+                <select name="race" id="raceSelect"></select>
+              </label>
+              <label>
+                <span>職業</span>
+                <select name="class" id="classSelect"></select>
+              </label>
+              <label>
+                <span>子職</span>
+                <select name="subclass" id="subclassSelect"></select>
+              </label>
+              <label>
+                <span>背景</span>
+                <input type="text" name="background" placeholder="例如：流浪學徒">
+              </label>
+              <label>
+                <span>傳承</span>
+                <input type="text" name="heritage" placeholder="可自由填寫">
+              </label>
+              <label>
+                <span>出身</span>
+                <input type="text" name="origin" placeholder="可自由填寫">
+              </label>
+              <label>
+                <span>宿命</span>
+                <input type="text" name="destiny" placeholder="可自由填寫">
+              </label>
+              <label>
+                <span>陣營 / 信條</span>
+                <input type="text" name="creed" placeholder="例如：守望者、誓守邊境">
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>屬性值</h3>
+            <div class="ability-grid" id="abilityInputs"></div>
+            <p class="hint">這裡填入建角時的基礎屬性；右側角卡會自動套用種族加值、調整值、技能與先攻。</p>
+          </section>
+
+          <section class="form-section">
+            <h3>核心追蹤</h3>
+            <div class="form-grid three">
+              <label>
+                <span>目前生命值</span>
+                <input type="number" name="currentHp" min="0" value="8">
+              </label>
+              <label>
+                <span>最大生命值覆寫</span>
+                <input type="number" name="maxHpOverride" min="1" placeholder="留白則自動估算">
+              </label>
+              <label>
+                <span>臨時生命值</span>
+                <input type="number" name="tempHp" min="0" value="0">
+              </label>
+              <label>
+                <span>幽冥等級</span>
+                <input type="number" name="gloomLevel" min="0" max="10" value="0">
+              </label>
+              <label>
+                <span>光明火花</span>
+                <input type="number" name="lightSpark" min="0" max="9" value="0">
+              </label>
+              <label>
+                <span>已用生命骰</span>
+                <input type="number" name="hitDiceUsed" min="0" value="0">
+              </label>
+              <label>
+                <span>護甲類型</span>
+                <select name="armorType" id="armorTypeSelect"></select>
+              </label>
+              <label>
+                <span>盾牌</span>
+                <select name="shieldMode">
+                  <option value="none">未裝備</option>
+                  <option value="shield">盾牌 +2</option>
+                </select>
+              </label>
+              <label>
+                <span>護甲等級覆寫</span>
+                <input type="number" name="acOverride" min="0" placeholder="留白則自動估算">
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>戰鬥狀態</h3>
+            <div class="form-grid three">
+              <label>
+                <span>專注狀態</span>
+                <select name="concentrationState">
+                  <option value="none">未專注</option>
+                  <option value="active">專注中</option>
+                </select>
+              </label>
+              <label>
+                <span>靈感</span>
+                <select name="inspirationState">
+                  <option value="none">沒有</option>
+                  <option value="ready">持有中</option>
+                </select>
+              </label>
+              <label>
+                <span>掩蔽</span>
+                <select name="coverState">
+                  <option value="none">無掩蔽</option>
+                  <option value="half">半掩蔽</option>
+                  <option value="threeQuarters">四分之三掩蔽</option>
+                  <option value="full">全掩蔽</option>
+                </select>
+              </label>
+              <label>
+                <span>死亡成功</span>
+                <input type="number" name="deathSaveSuccess" min="0" max="3" value="0">
+              </label>
+              <label>
+                <span>死亡失敗</span>
+                <input type="number" name="deathSaveFail" min="0" max="3" value="0">
+              </label>
+              <label>
+                <span>先攻順位</span>
+                <input type="number" name="initiativeScore" placeholder="可留白">
+              </label>
+              <label class="full">
+                <span>當前狀態與效果</span>
+                <input type="text" name="conditionNotes" placeholder="例如：中毒、倒地、隱形、被祝福、減速">
+              </label>
+              <label class="full">
+                <span>優勢 / 劣勢提醒</span>
+                <input type="text" name="tacticalNotes" placeholder="例如：對亡靈威嚇優勢；遠程攻擊受遮蔽劣勢">
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>技能熟練</h3>
+            <div class="panel-strip">
+              <div class="mini-stat">
+                <span>熟練加值</span>
+                <strong id="proficiencyPreview">+2</strong>
+              </div>
+              <div class="mini-stat">
+                <span>被動察覺</span>
+                <strong id="passivePerceptionPreview">10</strong>
+              </div>
+            </div>
+            <div id="skillInputs" class="skill-grid"></div>
+          </section>
+
+          <section class="form-section dynamic-section">
+            <h3>種族與職業專屬欄位</h3>
+            <div id="dynamicFields" class="dynamic-fields"></div>
+          </section>
+
+          <section class="form-section">
+            <h3>施法管理</h3>
+            <p class="hint">可先按「套用法術位」自動帶入目前職業與等級的基礎法術位，再依團規微調。</p>
+            <div id="spellManager" class="spell-manager"></div>
+            <div class="form-grid two">
+              <label class="full">
+                <span>已知 / 準備法術</span>
+                <textarea name="spellbook" rows="5" placeholder="例如：戲法：光亮術、霧觸；1環：護盾術、羽落術"></textarea>
+              </label>
+              <label class="full">
+                <span>法術清單</span>
+                <textarea name="spellEntries" rows="6" placeholder="每行一筆：等級|名稱|狀態|備註&#10;例如：2|迷霧步|準備|保留脫離戰場&#10;0|光亮術|常駐|照明"></textarea>
+              </label>
+              <label class="full">
+                <span>施法備註</span>
+                <textarea name="spellNotes" rows="4" placeholder="記錄儀式、專注、法術來源、招式搭配"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>裝備與金錢</h3>
+            <div class="form-grid three">
+              <label>
+                <span>CP</span>
+                <input type="number" name="cp" min="0" value="0">
+              </label>
+              <label>
+                <span>SP</span>
+                <input type="number" name="sp" min="0" value="0">
+              </label>
+              <label>
+                <span>GP</span>
+                <input type="number" name="gp" min="0" value="0">
+              </label>
+              <label>
+                <span>PP</span>
+                <input type="number" name="pp" min="0" value="0">
+              </label>
+              <label>
+                <span>負重上限覆寫</span>
+                <input type="number" name="carryOverride" min="0" placeholder="留白則用力量 x 15">
+              </label>
+              <label>
+                <span>目前攜帶重量</span>
+                <input type="number" name="carryWeight" min="0" value="0">
+              </label>
+            </div>
+            <div class="form-grid two">
+              <label class="full">
+                <span>結構化武器卡</span>
+                <textarea name="weaponEntries" rows="6" placeholder="每行一筆：名稱|屬性|是否熟練|傷害骰|傷害屬性|備註&#10;例如：秘銀匕首|dex|yes|1d4|穿刺|可投擲&#10;例如：短杖|int|yes|1d6|力場|法器導引"></textarea>
+              </label>
+              <label class="full">
+                <span>武器與護具</span>
+                <textarea name="weaponLoadout" rows="4" placeholder="例如：長劍、短弓、皮甲、盾牌"></textarea>
+              </label>
+              <label class="full">
+                <span>背包與雜物</span>
+                <textarea name="inventoryNotes" rows="5" placeholder="例如：火把 x5、繩索、醫療包、法器、口糧"></textarea>
+              </label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>團務備註</h3>
+            <div class="form-grid two">
+              <label class="full">
+                <span>技能 / 專長 / 專精</span>
+                <textarea name="skillNotes" rows="4" placeholder="例如：察覺、洞悉、醫藥；專精：隱匿"></textarea>
+              </label>
+              <label class="full">
+                <span>角色摘要與其他備註</span>
+                <textarea name="notes" rows="5" placeholder="額外規則、專長、隊伍備註、角色摘要"></textarea>
+              </label>
+            </div>
+          </section>
+        </form>
+      </section>
+
+      <section class="panel sheet-panel">
+        <div class="panel-head print-hide">
+          <h2>角色角卡</h2>
+          <p>這一頁只保留角色卡視圖，適合跑團桌面查看、手機切換與列印輸出。</p>
+        </div>
+        <div id="sheetView" class="sheet-view"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
