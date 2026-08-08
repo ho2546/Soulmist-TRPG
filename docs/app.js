@@ -80,39 +80,60 @@ const races = {
 };
 
 const classes = {
-  "戰士": { hitDie: 10, hpBase: 10, proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血戰騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
-  "野蠻人": { hitDie: 12, hpBase: 12, proficiencies: ["簡易武器", "軍用武器", "盾牌"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["荒魂行者", "血怒圖騰"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
-  "遊蕩者": { hitDie: 8, hpBase: 8, proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["夜行密探", "靈刃客"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
-  "武僧": { hitDie: 8, hpBase: 8, proficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["靜山道"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
-  "探索者": { hitDie: 10, hpBase: 10, proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["獸契行者", "迷霧射手"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
-  "學者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["遺物考證", "戰術史官"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
-  "靈術師": { hitDie: 8, hpBase: 8, proficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["侍靈道", "咒疫者", "守命人", "渡魂司"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
-  "織霧者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素侍者", "血術行家", "時織者"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
+  "戰士": { hitDie: 10, hpBase: 10, proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血精英", "黑騎士", "獸群領袖", "聖堂騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
+  "野蠻人": { hitDie: 12, hpBase: 12, proficiencies: ["簡易武器", "軍用武器", "盾牌"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["破壞者", "灰燼狂戰士", "戰事之主"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
+  "遊蕩者": { hitDie: 8, hpBase: 8, proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["詐術師", "刺客", "縱火師"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
+  "武僧": { hitDie: 8, hpBase: 8, proficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["風行者", "啟迪僧", "原初門徒"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
+  "探索者": { hitDie: 10, hpBase: 10, proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["馴獸師", "護林者", "審判者", "斥候"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
+  "學者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["特使", "工程師", "草藥師"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
+  "靈術師": { hitDie: 8, hpBase: 8, proficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["死靈師", "薩滿", "巫醫", "醫師"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
+  "織霧者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素使", "血法師", "先知"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
 };
 
 const subclassSummaries = {
   "戰士:門士": ["偏向守線與戰術壓制。", "適合擔任隊伍前排與掩護核心。"],
-  "戰士:血戰騎士": ["把生命代價轉成爆發與威懾。", "適合高風險高輸出的近戰節奏。"],
-  "野蠻人:荒魂行者": ["偏向荒野靈力與追獵直覺。", "在地形與生存場景更有發揮。"],
-  "野蠻人:血怒圖騰": ["主打更兇猛的狂暴與抗打。", "適合持續承受火力的前線。"],
-  "遊蕩者:夜行密探": ["偏向潛入、調查與情報收集。", "團外探索與暗線場景很強。"],
-  "遊蕩者:靈刃客": ["結合靈性能量與精準暗殺。", "適合短回合爆發與機動切入。"],
-  "武僧:靜山道": ["偏向內在修行與穩定控制。", "兼具生存、機動與節奏壓迫。"],
-  "探索者:獸契行者": ["帶夥伴上場，擅長雙單位協同。", "適合控場、追擊與站位操作。"],
-  "探索者:迷霧射手": ["遠程壓制與機動游擊更強。", "適合視野戰與點殺脆皮目標。"],
-  "學者:遺物考證": ["偏向文物、密碼與遺跡研究。", "適合解謎、考據與場景互動。"],
-  "學者:戰術史官": ["以知識支援整隊行動。", "擅長戰場判讀與團隊增益。"],
-  "靈術師:侍靈道": ["召使與靈體支援較強。", "適合雙線操作與功能型控場。"],
-  "靈術師:咒疫者": ["擅長腐化、詛咒與持續削弱。", "適合拖長戰與目標封鎖。"],
-  "靈術師:守命人": ["以保護與回復為核心。", "適合擔任團隊穩定器。"],
-  "靈術師:渡魂司": ["偏向靈界溝通與死亡相關權能。", "在亡靈與禁忌議題更有戲。"],
-  "織霧者:元素侍者": ["以元素主題法術建立輸出與場控。", "適合明確屬性風格的施法者。"],
-  "織霧者:血術行家": ["把自傷轉成更高的施法效益。", "適合高風險高上限的法師玩法。"],
-  "織霧者:時織者": ["偏向先讀、延後與節奏操控。", "適合支援型控場與戰局預判。"],
+  "戰士:血精英": ["把鮮血代價轉成爆發與威懾。", "適合高風險高輸出的近戰節奏。"],
+  "戰士:黑騎士": ["以重甲、威嚇與挑戰強敵主導前線。", "適合坦線、承傷與牽制高威脅目標。"],
+  "戰士:獸群領袖": ["運用獸群形態與領袖能力強化同伴。", "適合協同作戰與團隊增益。"],
+  "戰士:聖堂騎士": ["運用光明火花與聖堂技藝守護戰場。", "適合防護、支援與對抗黑暗。"],
+  "野蠻人:破壞者": ["把怨恨與狂暴化為猛烈攻勢。", "適合正面突破與連續擊殺。"],
+  "野蠻人:灰燼狂戰士": ["以灰燼毒劑與黑暗抗性維持戰鬥。", "適合危險環境與消耗戰。"],
+  "野蠻人:戰事之主": ["以戰吼、聖痕與領袖氣勢鼓舞隊伍。", "適合前線指揮與團隊強化。"],
+  "遊蕩者:詐術師": ["偏向詭計、社交與情報收集。", "團外探索與暗線場景很強。"],
+  "遊蕩者:刺客": ["結合潛伏與精準暗殺。", "適合短回合爆發與機動切入。"],
+  "遊蕩者:縱火師": ["以火藥、炸彈與爆炸裝置製造混亂。", "適合範圍傷害、陷阱與撤離戰術。"],
+  "武僧:風行者": ["精進宗派武器與氣的運用。", "適合機動武技與多樣戰鬥架勢。"],
+  "武僧:啟迪僧": ["以預知、天眼與時間感知回應危機。", "適合防守反擊與戰局預判。"],
+  "武僧:原初門徒": ["把動物之靈與宗派武藝合而為一。", "適合獸靈強化與近戰壓迫。"],
+  "探索者:馴獸師": ["帶夥伴上場，擅長雙單位協同。", "適合控場、追擊與站位操作。"],
+  "探索者:護林者": ["以陷阱與自然精準掌控地形。", "適合預先布置、守區與伏擊。"],
+  "探索者:審判者": ["以暗黑感知與審判之光追獵黑暗。", "適合鎖定邪惡目標與持續追擊。"],
+  "探索者:斥候": ["擅長暗界製圖、暗影步與隱密偵察。", "適合探路、滲透與快速脫離。"],
+  "學者:特使": ["偏向外交、交涉與秩序調停。", "適合社交場景與團隊支援。"],
+  "學者:工程師": ["以發明與機械奇蹟強化隊伍。", "擅長道具、裝置與戰術支援。"],
+  "學者:草藥師": ["以古老種子、藥品與草藥支援隊伍。", "適合治療、環境控制與探索準備。"],
+  "靈術師:死靈師": ["偏向亡靈、靈縛與死亡權能。", "在死者、僕從與禁忌議題更有戲。"],
+  "靈術師:薩滿": ["以先祖與動物魂火支援戰局。", "適合化身、圖騰與靈性輔助。"],
+  "靈術師:巫醫": ["擅長腐化、詛咒與禁術操作。", "適合拖長戰與目標封鎖。"],
+  "靈術師:醫師": ["以保護與回復為核心。", "適合擔任團隊穩定器。"],
+  "織霧者:元素使": ["以元素主題法術建立輸出與場控。", "適合明確屬性風格的施法者。"],
+  "織霧者:血法師": ["把自傷轉成更高的施法效益。", "適合高風險高上限的法師玩法。"],
+  "織霧者:先知": ["偏向先讀、延後與時間操控。", "適合支援型控場與戰局預判。"],
+};
+
+const subclassAliases = {
+  "戰士": { "血戰騎士": "血精英" },
+  "野蠻人": { "荒魂行者": "破壞者", "血怒圖騰": "破壞者", "原初鬥士": "破壞者", "褻瀆者": "破壞者" },
+  "遊蕩者": { "夜行密探": "詐術師", "靈刃客": "刺客" },
+  "武僧": { "靜山道": "啟迪僧" },
+  "探索者": { "獸契行者": "馴獸師", "迷霧射手": "斥候" },
+  "學者": { "遺物考證": "特使", "戰術史官": "工程師" },
+  "靈術師": { "侍靈道": "死靈師", "咒疫者": "巫醫", "守命人": "醫師", "渡魂司": "薩滿" },
+  "織霧者": { "元素侍者": "元素使", "血術行家": "血法師", "時織者": "先知" },
 };
 
 const sampleCharacter = {
-  name: "瑟琳娜", player: "Ron", level: 5, xp: 6500, race: "艾維尼安人", class: "織霧者", subclass: "時織者",
+  name: "瑟琳娜", player: "Ron", level: 5, xp: 6500, race: "艾維尼安人", class: "織霧者", subclass: "先知",
   background: "迷霧抄寫員", heritage: "時織學派旁系", origin: "潮蝕邊境塔城", destiny: "在大霧降臨前改寫失落預言", creed: "記錄一切，延後毀滅",
   currentHp: 26, maxHpOverride: "", tempHp: 3, gloomLevel: 1, lightSpark: 2, hitDiceUsed: 1,
   concentrationState: "active", inspirationState: "ready", coverState: "half", deathSaveSuccess: 0, deathSaveFail: 0, initiativeScore: 17,
@@ -201,7 +222,7 @@ function buildSkillInputs() {
 
 function rebuildSubclassOptions() {
   const classData = classes[form.elements.class.value];
-  const current = form.elements.subclass?.value;
+  const current = normalizeSubclass(form.elements.class.value, form.elements.subclass?.value);
   const options = classData?.subclasses?.length ? classData.subclasses : ["無"];
   subclassSelect.innerHTML = options.map((name) => `<option value="${name}">${name}</option>`).join("");
   subclassSelect.value = options.includes(current) ? current : options[0];
@@ -238,6 +259,7 @@ function populateDefaults() {
 function populateForm(data) {
   if (data.race && races[data.race]) form.elements.race.value = data.race;
   if (data.class && classes[data.class]) form.elements.class.value = data.class;
+  if (data.class && data.subclass) data = { ...data, subclass: normalizeSubclass(data.class, data.subclass) };
   rebuildSubclassOptions();
   rebuildDynamicFields();
   rebuildSpellManager();
@@ -493,7 +515,7 @@ function getClassTrackers(state, classData) {
   Object.entries(getClassResourceCaps(state, classData, getFinalAbilities(state))).forEach(([label, data]) => trackers.push(`${label}：${Math.min(data.current, data.max)} / ${data.max}`));
   if (state.class === "探索者") trackers.push(`獵敵目標：${state.favoredEnemy || "未填寫"}`);
   if (state.class === "學者") trackers.push(`知識骰：${state.cognitionDie || "未填寫"}`);
-  if (state.class === "織霧者" && state.subclass === "時織者") trackers.push(`時視使用次數：${state.timeSightUses ?? 0}`);
+  if (state.class === "織霧者" && state.subclass === "先知") trackers.push(`時視使用次數：${state.timeSightUses ?? 0}`);
   if (state.class === "戰士") {
     if (form.elements.secondWindCurrent) trackers.push(`回氣剩餘：${state.secondWindCurrent ?? 0}`);
     if (form.elements.actionSurgeCurrent) trackers.push(`動作如潮剩餘：${state.actionSurgeCurrent ?? 0}`);
@@ -512,7 +534,7 @@ function getClassSpecificFields(className, subclassName) {
   if (className === "武僧") fields.push({ type: "number", name: "kiCurrent", label: "氣點剩餘", min: 0, value: 2 });
   if (className === "探索者") {
     fields.push({ type: "text", name: "favoredEnemy", label: "獵敵目標", placeholder: "例如：亡靈、獵霧獸、帝國斥候" });
-    if (subclassName === "獸契行者") {
+    if (subclassName === "馴獸師") {
       fields.push({ type: "text", name: "companionName", label: "夥伴名稱", placeholder: "例如：灰牙" });
       fields.push({ type: "text", name: "companionType", label: "夥伴類型", placeholder: "例如：霧狼、山貓、巨鷹" });
     }
@@ -523,15 +545,15 @@ function getClassSpecificFields(className, subclassName) {
   }
   if (className === "靈術師") {
     fields.push({ type: "number", name: "connectionUsesCurrent", label: "靈魂連結剩餘", min: 0, value: 1 });
-    if (subclassName === "侍靈道") fields.push({ type: "text", name: "servantNotes", label: "侍靈備註", placeholder: "例如：鴉靈、守墓犬、祖靈面具" });
-    if (subclassName === "咒疫者") fields.push({ type: "number", name: "taintLevel", label: "污染值", min: 0, value: 0 });
-    if (subclassName === "守命人") fields.push({ type: "number", name: "protectLifePool", label: "守命池", min: 0, value: 10 });
+    if (subclassName === "死靈師") fields.push({ type: "text", name: "servantNotes", label: "僕從 / 靈縛備註", placeholder: "例如：鴉靈、守墓犬、祖靈面具" });
+    if (subclassName === "巫醫") fields.push({ type: "number", name: "taintLevel", label: "污染值", min: 0, value: 0 });
+    if (subclassName === "醫師") fields.push({ type: "number", name: "protectLifePool", label: "保護生命池", min: 0, value: 10 });
   }
   if (className === "織霧者") {
     fields.push({ type: "number", name: "arcaneRecoveryUsed", label: "法術回收已用", min: 0, value: 0 });
-    if (subclassName === "血術行家") fields.push({ type: "number", name: "bloodcastSelfDamage", label: "施血術自傷", min: 0, value: 0 });
-    if (subclassName === "元素侍者") fields.push({ type: "number", name: "elementOfferings", label: "元素奉獻", min: 0, value: 2 });
-    if (subclassName === "時織者") fields.push({ type: "number", name: "timeSightUses", label: "時視使用次數", min: 0, value: 1 });
+    if (subclassName === "血法師") fields.push({ type: "number", name: "bloodcastSelfDamage", label: "施血術自傷", min: 0, value: 0 });
+    if (subclassName === "元素使") fields.push({ type: "number", name: "elementOfferings", label: "元素奉獻", min: 0, value: 2 });
+    if (subclassName === "先知") fields.push({ type: "number", name: "timeSightUses", label: "時視使用次數", min: 0, value: 1 });
   }
   return fields;
 }
@@ -636,7 +658,7 @@ function getQuickResources(state, resourceCaps) {
     "法術回收": { key: "arcaneRecoveryUsed", mode: "invert" },
     "時視": { key: "timeSightUses", mode: "current" },
     "元素奉獻": { key: "elementOfferings", mode: "current" },
-    "守命池": { key: "protectLifePool", mode: "current" },
+    "保護生命池": { key: "protectLifePool", mode: "current" },
   };
   return Object.entries(resourceCaps).map(([label, data]) => ({ label, key: label, current: Math.min(data.current, data.max), max: data.max, ...mappings[label] })).filter((item) => item.key && item.mode);
 }
@@ -706,9 +728,9 @@ function getClassResourceCaps(state, classData, finalAbilities) {
   if (state.class === "學者" && form.elements.cognitionUsesCurrent) caps["知識骰"] = { current: toNumber(state.cognitionUsesCurrent, 0), max: getScholarKnowledgeUses(state.level) };
   if (state.class === "靈術師" && form.elements.connectionUsesCurrent) caps["靈魂連結"] = { current: toNumber(state.connectionUsesCurrent, 0), max: getSpiritLinkUses(state.level) };
   if (state.class === "織霧者" && form.elements.arcaneRecoveryUsed) caps["法術回收"] = { current: Math.max(0, 1 - toNumber(state.arcaneRecoveryUsed, 0)), max: 1 };
-  if (state.class === "織霧者" && state.subclass === "時織者" && form.elements.timeSightUses) caps["時視"] = { current: toNumber(state.timeSightUses, 0), max: getTimeSightUses(state.level) };
-  if (state.class === "織霧者" && state.subclass === "元素侍者" && form.elements.elementOfferings) caps["元素奉獻"] = { current: toNumber(state.elementOfferings, 0), max: getElementOfferingUses(state.level) };
-  if (state.class === "靈術師" && state.subclass === "守命人" && form.elements.protectLifePool) caps["守命池"] = { current: toNumber(state.protectLifePool, 0), max: Math.max(5, toNumber(state.level, 1) * 2 + Math.max(0, finalAbilities.wis.mod)) };
+  if (state.class === "織霧者" && state.subclass === "先知" && form.elements.timeSightUses) caps["時視"] = { current: toNumber(state.timeSightUses, 0), max: getTimeSightUses(state.level) };
+  if (state.class === "織霧者" && state.subclass === "元素使" && form.elements.elementOfferings) caps["元素奉獻"] = { current: toNumber(state.elementOfferings, 0), max: getElementOfferingUses(state.level) };
+  if (state.class === "靈術師" && state.subclass === "醫師" && form.elements.protectLifePool) caps["保護生命池"] = { current: toNumber(state.protectLifePool, 0), max: Math.max(5, toNumber(state.level, 1) * 2 + Math.max(0, finalAbilities.wis.mod)) };
   return caps;
 }
 
@@ -758,6 +780,7 @@ function getAbilityLabel(key) { return abilities.find((item) => item.key === key
 function getAbilityKeyByLabel(label) { return abilities.find((item) => item.label === label)?.key || null; }
 function getModifier(score) { return Math.floor((score - 10) / 2); }
 function getProficiencyBonus(level) { return Math.floor((Math.max(1, toNumber(level, 1)) - 1) / 4) + 2; }
+function normalizeSubclass(className, subclassName) { return subclassAliases[className]?.[subclassName] || subclassName; }
 function toNumber(value, fallback = 0) { if (value === null || value === undefined || value === "") return fallback; const parsed = Number(value); return Number.isFinite(parsed) ? parsed : fallback; }
 function formatSigned(number) { return `${number >= 0 ? "+" : ""}${number}`; }
 function escapeHtml(value) { return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"); }
