@@ -83,14 +83,14 @@ const races = {
 };
 
 const classes = {
-  "戰士": { hitDie: 10, hpBase: 10, proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血精英", "黑騎士", "獸群領袖", "聖堂騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
-  "野蠻人": { hitDie: 12, hpBase: 12, proficiencies: ["簡易武器", "軍用武器", "盾牌"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["破壞者", "灰燼狂戰士", "戰事之主"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
-  "遊蕩者": { hitDie: 8, hpBase: 8, proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], weaponProficiencies: ["簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["詐術師", "刺客", "縱火師"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
-  "武僧": { hitDie: 8, hpBase: 8, proficiencies: ["簡易武器", "短劍"], weaponProficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["風行者", "啟迪僧", "原初門徒"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
-  "探索者": { hitDie: 10, hpBase: 10, proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["馴獸師", "護林者", "審判者", "斥候"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
-  "學者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], weaponProficiencies: ["匕首", "標槍", "長棍", "輕弩"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["特使", "工程師", "草藥師"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
-  "靈術師": { hitDie: 8, hpBase: 8, proficiencies: ["匕首", "簡易武器"], weaponProficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["死靈師", "薩滿", "巫醫", "醫師"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
-  "織霧者": { hitDie: 6, hpBase: 6, proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], weaponProficiencies: ["匕首", "飛鏢", "投石索", "輕弩"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素使", "血法師", "先知"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
+  "戰士": { hitDie: 10, hpBase: 10, savingThrows: ["str", "con"], proficiencies: ["所有護甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["戰鬥風格", "回氣", "動作如潮", "額外攻擊", "不屈"], resources: ["回氣", "動作如潮", "不屈"], subclasses: ["門士", "血精英", "黑騎士", "獸群領袖", "聖堂騎士"], summary: "通用前排，擅長戰鬥風格與高行動效率。" },
+  "野蠻人": { hitDie: 12, hpBase: 12, savingThrows: ["str", "con"], proficiencies: ["簡易武器", "軍用武器", "盾牌"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["狂暴", "危險感知", "魯莽攻擊", "快速移動", "原始本能"], resources: ["狂暴次數"], subclasses: ["破壞者", "灰燼狂戰士", "戰事之主"], summary: "衝鋒型前線，以高生命值與狂暴爆發支撐戰場。" },
+  "遊蕩者": { hitDie: 8, hpBase: 8, savingThrows: ["dex", "int"], proficiencies: ["輕甲", "簡易武器", "手弩", "細劍"], weaponProficiencies: ["簡易武器", "手弩", "細劍"], features: ["偷襲", "巧手動作", "靈巧閃避", "可靠天賦", "心靈堅韌"], resources: ["偷襲傷害", "專精技能"], subclasses: ["詐術師", "刺客", "縱火師"], summary: "高機動與高技能職，擅長迂迴、隱匿與精準擊殺。" },
+  "武僧": { hitDie: 8, hpBase: 8, savingThrows: ["str", "dex"], proficiencies: ["簡易武器", "短劍"], weaponProficiencies: ["簡易武器", "短劍"], features: ["武術", "氣點", "疾風步", "震懾拳", "完美身心"], resources: ["氣點"], subclasses: ["風行者", "啟迪僧", "原初門徒"], summary: "以身體修行與內在能量作戰，機動強、節奏快。" },
+  "探索者": { hitDie: 10, hpBase: 10, savingThrows: ["str", "dex"], proficiencies: ["輕甲", "中甲", "盾牌", "簡易武器", "軍用武器"], weaponProficiencies: ["簡易武器", "軍用武器"], features: ["獵敵", "自然探索", "戰鬥風格", "原野祕法", "額外攻擊"], resources: ["獵敵目標", "法術位"], subclasses: ["馴獸師", "護林者", "審判者", "斥候"], spellcasting: { ability: "wis", mode: "半施法", preparedFormula: "依等級與感知調整準備法術" }, summary: "偵察、追蹤與野外生存專家，兼具武技與祕法。" },
+  "學者": { hitDie: 6, hpBase: 6, savingThrows: ["dex", "int"], proficiencies: ["匕首", "標槍", "長棍", "輕弩", "書冊與工具"], weaponProficiencies: ["匕首", "標槍", "長棍", "輕弩"], features: ["知識骰", "學派研究", "奧術分析", "戰術指引", "廣泛學識"], resources: ["知識骰", "研究主題"], subclasses: ["特使", "工程師", "草藥師"], summary: "以知識支援戰局，適合情報、解謎與團隊增益。" },
+  "靈術師": { hitDie: 8, hpBase: 8, savingThrows: ["wis", "cha"], proficiencies: ["匕首", "簡易武器"], weaponProficiencies: ["匕首", "簡易武器"], features: ["施法", "靈魂連結", "霧觸感知", "魂印法門", "信念護持"], resources: ["法術位", "靈魂連結"], subclasses: ["死靈師", "薩滿", "巫醫", "醫師"], spellcasting: { ability: "wis", mode: "準備施法", preparedFormula: "感知調整值 + 靈術師等級" }, summary: "與靈界互動的全施法者，擅長保護、詛咒與溝通。" },
+  "織霧者": { hitDie: 6, hpBase: 6, savingThrows: ["con", "cha"], proficiencies: ["匕首", "飛鏢", "投石索", "輕弩", "法器", "書寫工具"], weaponProficiencies: ["匕首", "飛鏢", "投石索", "輕弩"], features: ["施法", "法術回收", "秘法學派", "迷霧編織", "高階奧秘"], resources: ["法術位", "法術回收", "迷霧編織"], subclasses: ["元素使", "血法師", "先知"], spellcasting: { ability: "int", mode: "法術書施法", preparedFormula: "智力調整值 + 織霧者等級" }, summary: "純正施法核心，以法術書與秘法技巧主導戰場。" },
 };
 
 const subclassSummaries = {
@@ -186,7 +186,7 @@ form.addEventListener("input", updateAll);
 sheetView.addEventListener("click", handleSheetActions);
 form.addEventListener("change", (event) => {
   if (event.target.name === "race" || event.target.name === "class") { rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); }
-  if (event.target.name === "class") syncCurrentHpToEstimate();
+  if (event.target.name === "class") { applyClassSavingThrows(); syncCurrentHpToEstimate(); }
   updateAll();
 });
 modeButtons.forEach((button) => button.addEventListener("click", () => {
@@ -205,6 +205,7 @@ function init() {
   rebuildDynamicFields();
   rebuildSpellManager();
   populateDefaults();
+  applyClassSavingThrows();
   const saved = loadState();
   if (saved) populateForm(saved);
   updateAll();
@@ -217,7 +218,15 @@ function buildStaticSelects() {
 }
 
 function buildAbilityInputs() {
-  abilityInputs.innerHTML = abilities.map((ability) => `<div class="ability-card"><h4>${ability.label}</h4><label><span>基礎值</span><input type="number" name="${ability.key}" min="1" max="20" value="10"></label><div class="mini" id="${ability.key}BonusHint">種族加值：+0</div></div>`).join("");
+  abilityInputs.innerHTML = abilities.map((ability) => `<div class="ability-card"><h4>${ability.label}</h4><label><span>基礎值</span><input type="number" name="${ability.key}" min="1" max="20" value="10"></label><label><span>豁免熟練</span><select name="save_${ability.key}_proficient"><option value="no">未熟練</option><option value="yes">熟練</option></select></label><div class="ability-card-meta"><span class="mini" id="${ability.key}BonusHint">種族加值：+0</span><strong id="savePreview_${ability.key}">豁免 +0</strong></div></div>`).join("");
+}
+
+function applyClassSavingThrows() {
+  const proficientAbilities = new Set(classes[form.elements.class.value]?.savingThrows || []);
+  abilities.forEach((ability) => {
+    const field = form.elements[`save_${ability.key}_proficient`];
+    if (field) field.value = proficientAbilities.has(ability.key) ? "yes" : "no";
+  });
 }
 
 function buildSkillInputs() {
@@ -268,6 +277,7 @@ function populateForm(data) {
   rebuildSubclassOptions();
   rebuildDynamicFields();
   rebuildSpellManager();
+  applyClassSavingThrows();
   Object.entries(data).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value ?? ""; });
   rebuildSubclassOptions();
   rebuildDynamicFields();
@@ -300,15 +310,27 @@ function updateAll() {
   const finalAbilities = getFinalAbilities(state);
   const proficiency = getProficiencyBonus(state.level);
   const skills = getSkillTotals(state, finalAbilities, proficiency);
-  updateAbilityHints(state);
+  const savingThrows = getSavingThrowTotals(state, finalAbilities, proficiency);
+  updateAbilityHints(state, savingThrows);
   updateSkillPreviews(skills, proficiency);
-  renderSheet(state, finalAbilities, skills, proficiency);
+  renderSheet(state, finalAbilities, skills, savingThrows, proficiency);
   saveState(state);
 }
 
-function updateAbilityHints(state) {
+function updateAbilityHints(state, savingThrows) {
   const bonuses = getResolvedRaceBonuses(state);
-  abilities.forEach((ability) => { document.getElementById(`${ability.key}BonusHint`).textContent = `種族加值：${formatSigned(bonuses[ability.key] || 0)}`; });
+  abilities.forEach((ability) => {
+    document.getElementById(`${ability.key}BonusHint`).textContent = `種族加值：${formatSigned(bonuses[ability.key] || 0)}`;
+    document.getElementById(`savePreview_${ability.key}`).textContent = `豁免 ${formatSigned(savingThrows[ability.key].total)}`;
+  });
+}
+
+function getSavingThrowTotals(state, finalAbilities, proficiency) {
+  return Object.fromEntries(abilities.map((ability) => {
+    const isProficient = state[`save_${ability.key}_proficient`] === "yes";
+    const proficiencyBonus = isProficient ? proficiency : 0;
+    return [ability.key, { total: finalAbilities[ability.key].mod + proficiencyBonus, proficiencyBonus, isProficient }];
+  }));
 }
 
 function updateSkillPreviews(skills, proficiency) {
@@ -317,7 +339,7 @@ function updateSkillPreviews(skills, proficiency) {
   skillDefinitions.forEach((skill) => { document.getElementById(`skillPreview_${skill.key}`).textContent = formatSigned(skills[skill.key].total); });
 }
 
-function renderSheet(state, finalAbilities, skills, proficiency) {
+function renderSheet(state, finalAbilities, skills, savingThrows, proficiency) {
   const classData = classes[state.class];
   const raceData = races[state.race];
   const isSessionMode = workspace.dataset.mobileMode === "session";
@@ -374,7 +396,7 @@ function renderSheet(state, finalAbilities, skills, proficiency) {
       featureBox("目前狀態", getCombatStateLines(state, armorClass), "feature-box-combat"),
       featureBox("戰術提醒", [state.conditionNotes || "尚未填寫當前狀態。", state.tacticalNotes || "尚未填寫優勢 / 劣勢提醒。"], "feature-box-combat"),
     ]), "section-combat")}
-    ${section("屬性", `<div class="ability-preview-grid">${abilities.map((ability) => renderAbilityCard(ability, finalAbilities[ability.key])).join("")}</div>`, "section-abilities")}
+    ${section("屬性與豁免", `<div class="ability-preview-grid">${abilities.map((ability) => renderAbilityCard(ability, finalAbilities[ability.key], savingThrows[ability.key])).join("")}</div>`, "section-abilities")}
     ${section("技能", `<div class="sheet-skills-grid">${getHighlightedSkills(skills).map(renderSheetSkill).join("")}</div>`, "section-skills")}
     ${section("熟練與語言", featureGrid([
       featureBox("武器熟練", weaponProficiencies, "feature-box-gear"),
@@ -385,7 +407,7 @@ function renderSheet(state, finalAbilities, skills, proficiency) {
       featureBox("種族特性", [...raceData.traits, `祝福：${raceData.blessing}`], "feature-box-lore"),
     ]), "section-race")}
     ${section("職業能力", featureGrid([
-      featureBox("職業摘要", [`生命骰：d${classData.hitDie}`, `1 級生命值：${classData.hpBase} + 體質調整值`, `熟練：${classData.proficiencies.join("、")}`], "feature-box-lore"),
+      featureBox("職業摘要", [`生命骰：d${classData.hitDie}`, `1 級生命值：${classData.hpBase} + 體質調整值`, `豁免熟練：${classData.savingThrows.map(getAbilityLabel).join("、")}`, `熟練：${classData.proficiencies.join("、")}`], "feature-box-lore"),
       featureBox("職業重點", classData.features, "feature-box-lore"),
     ]), "section-class")}
     ${section("子職重點", featureGrid([
@@ -410,7 +432,7 @@ function renderSheet(state, finalAbilities, skills, proficiency) {
 
 function section(title, inner, sectionClass = "") { return `<section class="sheet-section ${sectionClass}"><h3>${title}</h3>${inner}</section>`; }
 function featureGrid(items) { return `<div class="feature-grid">${items.join("")}</div>`; }
-function renderAbilityCard(ability, data) { return `<article class="ability-preview ability-${ability.key}"><header><h3>${ability.label}</h3><div class="ability-mod">${formatSigned(data.mod)}</div></header><div class="ability-score">${data.final}</div><div class="ability-numbers"><span>基礎 ${data.base}</span><span>加值 ${formatSigned(data.bonus)}</span><span>最終 ${data.final}</span></div></article>`; }
+function renderAbilityCard(ability, data, savingThrow) { return `<article class="ability-preview ability-${ability.key} ${savingThrow.isProficient ? "is-save-proficient" : ""}"><header><h3>${ability.label}</h3><div class="ability-mod">${formatSigned(data.mod)}</div></header><div class="ability-score-row"><div class="ability-score">${data.final}</div><div class="saving-throw-badge"><span>豁免</span><strong>${formatSigned(savingThrow.total)}</strong>${savingThrow.isProficient ? "<em>熟練</em>" : ""}</div></div><div class="ability-numbers"><span>基礎 ${data.base}</span><span>加值 ${formatSigned(data.bonus)}</span><span>最終 ${data.final}</span></div></article>`; }
 function renderSheetSkill(skill) { return `<article class="sheet-skill ${skill.proficiencyBonus ? "is-trained" : "is-untrained"}"><div class="sheet-skill-head"><h4>${skill.label}</h4><div class="sheet-skill-value">${formatSigned(skill.total)}</div></div><div class="ability-numbers"><span>${getAbilityLabel(skill.ability)} ${formatSigned(skill.abilityMod)}</span><span>熟練 ${formatSigned(skill.proficiencyBonus)}</span><span>額外 ${formatSigned(skill.misc)}</span></div></article>`; }
 function renderSessionTopbar(state, hpMax, armorClass, finalAbilities) {
   return `<div class="session-topbar">
@@ -703,7 +725,7 @@ function adjustQuickResource(resourceLabel, delta) {
 }
 
 function syncCurrentHpToEstimate() { form.elements.currentHp.value = getEstimatedMaxHp(getState(), classes[getState().class], getFinalAbilities(getState())); }
-function resetForm() { localStorage.removeItem(STORAGE_KEY); form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); updateAll(); }
+function resetForm() { localStorage.removeItem(STORAGE_KEY); form.reset(); buildStaticSelects(); rebuildSubclassOptions(); rebuildDynamicFields(); rebuildSpellManager(); populateDefaults(); applyClassSavingThrows(); updateAll(); }
 function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } }
 
